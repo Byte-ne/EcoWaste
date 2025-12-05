@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoWaste - Authentication</title>
+    <link rel="stylesheet" href="auth-fullscreen.css">
+</head>
+<!-- transparent background so left panel gradient shows through -->
+<rect width="400" height="600" fill="none" />
+
+<body>
+    <!-- Loading Screen with Growing Tree -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-container">
+            <h2>Growing your account...</h2>
+            <div class="tree-container">
+                <div class="tree">
+                    <div class="tree-leaves" id="treeLeaves"></div>
+                    <div class="tree-trunk"></div>
+                </div>
+            </div>
+            <div class="loading-bar-container">
+                <div class="loading-bar" id="loadingBar"></div>
+            </div>
+            <p id="loadingText">0%</p>
+        </div>
+    </div>
+
+    <!-- Full-Screen Auth Page -->
+    <div id="authPage" class="auth-page">
+        <div class="auth-container">
+            <!-- Left Side - Greenery Image -->
+            <div class="auth-left">
+                <div class="greenery-section">
+                    <svg class="nature-svg" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Sky -->
+                        <defs>
+                            <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#B0E0E6;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="400" height="600" fill="url(#skyGradient)" />
+
+                        <!-- Ground -->
+                        <ellipse cx="200" cy="550" rx="180" ry="40" fill="#4CAF50" opacity="0.6" />
+
+                        <!-- Back trees -->
+                        <g opacity="0.4">
+                            <polygon points="80,400 60,300 100,300" fill="#2E7D32" />
+                            <rect x="75" y="400" width="10" height="80" fill="#5D4037" />
+                            <polygon points="320,420 300,320 340,320" fill="#2E7D32" />
+                            <rect x="315" y="420" width="10" height="100" fill="#5D4037" />
+                        </g>
+
+                        <!-- Main trees -->
+                        <g>
+                            <polygon points="100,380 50,250 150,250" fill="#66BB6A" />
+                            <rect x="93" y="380" width="14" height="120" fill="#5D4037" />
+
+                            <polygon points="300,400 220,220 380,220" fill="#43A047" />
+                            <rect x="293" y="400" width="14" height="140" fill="#5D4037" />
+                        </g>
+
+                        <!-- Leaves/Foliage details -->
+                        <circle cx="100" cy="300" r="50" fill="#81C784" opacity="0.7" />
+                        <circle cx="300" cy="300" r="60" fill="#66BB6A" opacity="0.7" />
+                        <circle cx="200" cy="500" r="40" fill="#4CAF50" opacity="0.5" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Right Side - Auth Forms -->
+            <div class="auth-right">
+                <div class="auth-content">
+                    <h1>EcoWaste</h1>
+                    <p class="auth-subtitle">Join us in making a greener planet</p>
+
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" data-tab="login">Login</button>
+                        <button class="auth-tab" data-tab="signup">Sign Up</button>
+                    </div>
+
+                    <!-- Login Form -->
+                    <div id="loginTab" class="auth-form active">
+                        <form id="fullscreenLoginForm">
+                            <div class="form-group">
+                                <label for="fs-login-username">Username</label>
+                                <input type="text" id="fs-login-username" placeholder="Enter your username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="fs-login-password">Password</label>
+                                <input type="password" id="fs-login-password" placeholder="Enter your password"
+                                    required>
+                            </div>
+                            <button type="submit" class="auth-submit-btn">Log In</button>
+                            <div id="fs-login-msg" class="auth-msg"></div>
+                        </form>
+                    </div>
+
+                    <!-- Signup Form -->
+                    <div id="signupTab" class="auth-form">
+                        <form id="fullscreenSignupForm">
+                            <div class="form-group">
+                                <label for="fs-signup-username">Username</label>
+                                <input type="text" id="fs-signup-username" placeholder="Choose a username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="fs-signup-password">Password</label>
+                                <input type="password" id="fs-signup-password" placeholder="Create a password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="fs-signup-password2">Confirm Password</label>
+                                <input type="password" id="fs-signup-password2" placeholder="Confirm your password"
+                                    required>
+                            </div>
+                            <button type="submit" class="auth-submit-btn">Sign Up</button>
+                            <div id="fs-signup-msg" class="auth-msg"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="auth-fullscreen.js"></script>
+</body>
+
+</html>

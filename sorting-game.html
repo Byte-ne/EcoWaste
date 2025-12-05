@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waste Sorting Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #1c8c3a;
+        }
+
+        .game-header {
+            width: 100%;
+            background-color: #2E7D32;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-header h1 {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            background-color: #1B5E20;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 200ms ease;
+        }
+
+        .back-btn:hover {
+            background-color: #144a18;
+        }
+
+        .game-container {
+            width: 100%;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #2E7D32;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            color: #2E7D32;
+            font-weight: bold;
+        }
+
+        #sidewalk {
+            position: relative;
+            width: 100%;
+            min-height: 220px;
+            background: white;
+            border: 2px dashed #1c8c3a;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        #startBtn {
+            padding: 14px 30px;
+            background: #2E7D32;
+            color: white;
+            border: none;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 200ms ease;
+        }
+
+        #startBtn:hover {
+            background-color: #1B5E20;
+        }
+
+        .item {
+            padding: 10px 16px;
+            background: #e8ffe8;
+            border: 2px solid #1c8c3a;
+            border-radius: 6px;
+            cursor: grab;
+            user-select: none;
+            display: none;
+            font-weight: bold;
+            transition: transform 100ms ease;
+        }
+
+        .item:active {
+            cursor: grabbing;
+        }
+
+        .item:hover {
+            transform: scale(1.05);
+        }
+
+        #countdown {
+            position: absolute;
+            font-size: 80px;
+            font-weight: bold;
+            opacity: 0;
+            transform: scale(0.5);
+            color: #2E7D32;
+            animation: pop 1s ease forwards;
+            pointer-events: none;
+            display: none;
+        }
+
+        @keyframes pop {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+
+            40% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(1);
+            }
+        }
+
+        #bins {
+            margin: 30px 0;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .bin {
+            width: 160px;
+            height: 160px;
+            border: 4px solid #1c8c3a;
+            border-radius: 10px;
+            text-align: center;
+            padding: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #f6fff6;
+            cursor: pointer;
+            transition: all 200ms ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .bin:hover {
+            background: #e2ffe2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .bin.invalid {
+            background: #ffe6e6 !important;
+            border-color: #ff4d4d;
+            color: #b30000;
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-8px);
+            }
+
+            75% {
+                transform: translateX(8px);
+            }
+        }
+
+        .bin[data-bin="recycle"] {
+            background: #e6f0ff;
+            border-color: #2b6fe6;
+            color: #0b4dbb;
+        }
+
+        .bin[data-bin="recycle"]:hover {
+            background: #d6e9ff;
+        }
+
+        .bin[data-bin="organic"] {
+            background: #f6fff6;
+            border-color: #1c8c3a;
+            color: #1c8c3a;
+        }
+
+        .bin[data-bin="organic"]:hover {
+            background: #e2ffe2;
+        }
+
+        #popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        #popupContent {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            border: 3px solid #2E7D32;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+        }
+
+        #popupContent h2 {
+            color: #2E7D32;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        #popupContent p {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .popup-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .popup-buttons button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 200ms ease;
+        }
+
+        .play-again-btn {
+            background: #2E7D32;
+            color: white;
+        }
+
+        .play-again-btn:hover {
+            background: #1B5E20;
+        }
+
+        .back-home-btn {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .back-home-btn:hover {
+            background: #ccc;
+        }
+
+        #finalScore {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2E7D32;
+        }
+
+        #highScoreInfo {
+            font-size: 14px;
+            color: #999;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="game-header">
+        <h1>🎮 Waste Sorting Game</h1>
+        <button class="back-btn" onclick="goBack()">← Back</button>
+    </div>
+    <div class="game-container">
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-label">Current Score</div>
+                <div class="stat-value" id="score">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Time Elapsed</div>
+                <div class="stat-value" id="timer">0s</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">High Score</div>
+                <div class="stat-value" id="highScore">0</div>
+            </div>
+        </div>
+        <div id="sidewalk">
+            <button id="startBtn">Start Game</button>
+            <div id="countdown"></div>
+            <div class="item" draggable="true" data-type="recycle">♻ Tin Can</div>
+            <div class="item" draggable="true" data-type="organic">🍊 Orange Peel</div>
+            <div class="item" draggable="true" data-type="recycle">🥫 Glass Jar</div>
+            <div class="item" draggable="true" data-type="organic">🍵 Tea Leaves</div>
+            <div class="item" draggable="true" data-type="recycle">📦 Cardboard Box</div>
+            <div class="item" draggable="true" data-type="organic">🥥 Coconut Shell</div>
+            <div class="item" draggable="true" data-type="recycle">⚙ Metal Cap</div>
+            <div class="item" draggable="true" data-type="organic">🥬 Veg Scraps</div>
+        </div>
+        <div id="bins">
+            <div class="bin" data-bin="recycle">♻ Recyclable<br><small>(Blue Bin)</small></div>
+            <div class="bin" data-bin="organic">🌱 Organic<br><small>(Green Bin)</small></div>
+        </div>
+    </div>
+    <div id="popup">
+        <div id="popupContent">
+            <h2>Game Over! 🎉</h2>
+            <p id="finalScore"></p>
+            <p id="highScoreInfo"></p>
+            <div class="popup-buttons">
+                <button class="play-again-btn" onclick="location.reload()">Play Again</button>
+                <button class="back-home-btn" onclick="goBack()">Back Home</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function loadHighScore() {
+            return parseInt(localStorage.getItem("sortingGameHighScore") || "0", 10);
+        }
+        function saveHighScore(score) {
+            localStorage.setItem("sortingGameHighScore", score);
+        }
+        function goBack() {
+            const referrer = document.referrer;
+            if (referrer.includes("recycling-tips")) {
+                window.location.href = "recycling-tips.html";
+            } else {
+                window.location.href = "index.html#games";
+            }
+        }
+        let draggedItem = null;
+        let score = 0;
+        let correctDrops = 0;
+        let time = 0;
+        let timerInterval = null;
+        let highScore = loadHighScore();
+        const items = document.querySelectorAll(".item");
+        const initialTotalItems = items.length;
+        const bins = document.querySelectorAll(".bin");
+        const scoreBox = document.getElementById("score");
+        const timerBox = document.getElementById("timer");
+        const highScoreBox = document.getElementById("highScore");
+        const startBtn = document.getElementById("startBtn");
+        const countdown = document.getElementById("countdown");
+        highScoreBox.textContent = highScore;
+        function shuffleItems() {
+            const container = document.getElementById("sidewalk");
+            const elems = Array.from(container.querySelectorAll(".item"));
+            elems.forEach(e => container.removeChild(e));
+            for (let i = elems.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [elems[i], elems[j]] = [elems[j], elems[i]];
+            }
+            elems.forEach(e => container.appendChild(e));
+        }
+        function startCountdown() {
+            let number = 3;
+            countdown.style.display = "block";
+            function showNumber() {
+                countdown.textContent = number;
+                countdown.style.animation = "none";
+                void countdown.offsetWidth;
+                countdown.style.animation = "pop 1s ease forwards";
+                if (number > 1) {
+                    number--;
+                    setTimeout(showNumber, 1000);
+                } else {
+                    setTimeout(() => {
+                        countdown.style.display = "none";
+                        startGame();
+                    }, 1000);
+                }
+            }
+            showNumber();
+        }
+        function startGame() {
+            shuffleItems();
+            items.forEach(i => i.style.display = "block");
+            timerInterval = setInterval(() => {
+                time++;
+                timerBox.textContent = time + "s";
+            }, 1000);
+        }
+        startBtn.addEventListener("click", () => {
+            startBtn.style.display = "none";
+            startCountdown();
+        });
+        items.forEach(item => {
+            item.addEventListener("dragstart", () => {
+                draggedItem = item;
+                setTimeout(() => item.style.opacity = "0.3", 0);
+            });
+            item.addEventListener("dragend", () => {
+                item.style.opacity = "1";
+            });
+        });
+        bins.forEach(bin => {
+            bin.addEventListener("dragover", e => e.preventDefault());
+            bin.addEventListener("drop", () => {
+                if (!draggedItem) return;
+                if (draggedItem.dataset.type === bin.dataset.bin) {
+                    correctDrops++;
+                    score++;
+                    draggedItem.remove();
+                    scoreBox.textContent = score;
+                } else {
+                    score = Math.max(0, score - 1);
+                    scoreBox.textContent = score;
+                    draggedItem.remove();
+                    bin.classList.add("invalid");
+                    setTimeout(() => bin.classList.remove("invalid"), 600);
+                }
+                draggedItem = null;
+                if (document.querySelectorAll(".item").length === 0) endGame();
+            });
+        });
+        function endGame() {
+            clearInterval(timerInterval);
+            const accuracy = (initialTotalItems > 0) ? (correctDrops / initialTotalItems) * 100 : 0;
+            const finalScoreValue = Math.max(0, score * 10 - time);
+            let isNewHighScore = false;
+            if (finalScoreValue > highScore) {
+                highScore = finalScoreValue;
+                saveHighScore(highScore);
+                isNewHighScore = true;
+            }
+            document.getElementById("finalScore").textContent =
+                "Your Final Score: " + finalScoreValue + "\nAccuracy: " + accuracy.toFixed(0) + "%";
+            if (isNewHighScore) {
+                document.getElementById("highScoreInfo").textContent = "🎊 New High Score! 🎊";
+            } else {
+                document.getElementById("highScoreInfo").textContent = "High Score: " + highScore;
+            }
+            document.getElementById("popup").style.display = "flex";
+        }
+    </script>
+</body>
+
+</html>

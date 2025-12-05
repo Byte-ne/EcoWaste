@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Auth — Hackathon</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Auth-specific minimal styles & animations */
+        .auth-root {
+            max-width: 720px;
+            margin: 36px auto;
+            padding: 24px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #ffffff, #f7f7f9);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .06)
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 18px
+        }
+
+        .tab {
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            user-select: none;
+            transition: all .28s ease
+        }
+
+        .tab.active {
+            background: #111;
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(17, 17, 17, .08)
+        }
+
+        .card {
+            padding: 18px;
+            border-radius: 10px;
+            background: #fff;
+            overflow: hidden
+        }
+
+        .auth-form {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: 1fr
+        }
+
+        .input {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc
+        }
+
+        .btn {
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 0;
+            background: #0b74ff;
+            color: #fff;
+            cursor: pointer
+        }
+
+        .screen {
+            display: none;
+            padding: 18px;
+            text-align: center
+        }
+
+        .screen.active {
+            display: block
+        }
+
+        .fade-in {
+            animation: fadeIn .45s ease both
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px)
+            }
+
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+
+        .welcome {
+            font-size: 18px;
+            margin-bottom: 12px
+        }
+
+        .logout {
+            background: #ff4b4b
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-root">
+        <div class="tabs" role="tablist">
+            <div class="tab active" data-target="login">Login</div>
+            <div class="tab" data-target="signup">Sign Up</div>
+            <div class="tab" data-target="example">Example</div>
+        </div>
+
+        <div class="card">
+            <div id="login" class="screen active fade-in">
+                <form id="loginForm" class="auth-form">
+                    <input id="login-username" class="input" placeholder="Username" required />
+                    <input id="login-password" type="password" class="input" placeholder="Password" required />
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <button class="btn" type="submit">Log in</button>
+                        <button id="toSignup" type="button" class="btn" style="background:#6c757d">Create
+                            account</button>
+                    </div>
+                    <div id="login-msg" aria-live="polite"></div>
+                </form>
+            </div>
+
+            <div id="signup" class="screen fade-in">
+                <form id="signupForm" class="auth-form">
+                    <input id="signup-username" class="input" placeholder="Choose a username" required />
+                    <input id="signup-password" type="password" class="input" placeholder="Choose a password"
+                        required />
+                    <input id="signup-password2" type="password" class="input" placeholder="Repeat password" required />
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <button class="btn" type="submit">Sign up</button>
+                        <button id="toLogin" type="button" class="btn" style="background:#6c757d">Back to login</button>
+                    </div>
+                    <div id="signup-msg" aria-live="polite"></div>
+                </form>
+            </div>
+
+            <div id="example" class="screen fade-in">
+                <div id="example-inner">
+                    <div class="welcome">Welcome — you are not logged in yet.</div>
+                    <button id="goLogin" class="btn">Go to Login</button>
+                </div>
+            </div>
+
+            <div id="postLogin" class="screen">
+                <div class="welcome">Welcome back, <span id="userNameDisplay"></span>!</div>
+                <p>This is an example protected screen you see after logging in or signing up.</p>
+                <div style="display:flex;gap:8px;justify-content:center;margin-top:12px">
+                    <button id="logoutBtn" class="btn logout">Logout</button>
+                    <button id="goToApp" class="btn">Open App (placeholder)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

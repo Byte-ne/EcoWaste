@@ -1,0 +1,247 @@
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const bcrypt = require('bcrypt');
+const session = require('express-session');
+const cors = require('cors');
+
+const USERS_FILE = path.join(__dirname, 'users.json');
+const PORT = process.env.PORT || 3000;
+
+function loadUsers() {
+    try {
+        if (!fs.existsSync(USERS_FILE)) return {};
+        return JSON.parse(fs.readFileSync(USERS_FILE, 'utf8') || '{}');
+    } catch (e) {
+        return {};
+    }
+}
+function saveUsers(obj) {
+    fs.writeFileSync(USERS_FILE, JSON.stringify(obj, null, 2), 'utf8');
+}
+
+const app = express();
+app.use(cors({ origin: true, credentials: true }));
+app.use(express.json());
+app.use(session({
+    secret: 'hackathon-secret-change-this',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { httpOnly: true }
+}));
+
+// simple health
+app.get('/api/ping', (req, res) => res.json({ ok: true }));
+
+app.post('/api/signup', async (req, res) => {
+    const { username, password } = req.body || {};
+    if (!username || !password) return res.status(400).json({ success: false, message: 'Missing username or password' });
+    const users = loadUsers();
+    if (users[username]) return res.status(409).json({ success: false, message: 'Username exists' });
+    const hash = await bcrypt.hash(password, 10);
+    users[username] = { username, passwordHash: hash, created: Date.now() };
+    saveUsers(users);
+    req.session.user = { username };
+    res.json({ success: true, user: { username } });
+});
+
+app.post('/api/login', async (req, res) => {
+    const { username, password } = req.body || {};
+    if (!username || !password) return res.status(400).json({ success: false, message: 'Missing username or password' });
+    const users = loadUsers();
+    const u = users[username];
+    if (!u) return res.status(401).json({ success: false, message: 'No such user' });
+    const ok = await bcrypt.compare(password, u.passwordHash);
+    if (!ok) return res.status(401).json({ success: false, message: 'Invalid password' });
+    req.session.user = { username };
+    res.json({ success: true, user: { username } });
+});
+
+app.post('/api/logout', (req, res) => {
+    req.session.destroy(err => {
+        res.json({ success: true });
+    });
+});
+
+app.get('/api/me', (req, res) => {
+    if (req.session && req.session.user) return res.json({ user: req.session.user });
+    return res.status(401).json({ message: 'Not authorized' });
+});
+
+// Return user stats (coins, owned tags, highscores)
+app.get('/api/user-stats', (req, res) => {
+    if (!req.session || !req.session.user) return res.status(401).json({ message: 'Not authorized' });
+    const users = loadUsers();
+    const u = users[req.session.user.username] || {};
+    // ensure defaults
+    const coins = typeof u.coins === 'number' ? u.coins : 0;
+    const ownedTags = Array.isArray(u.ownedTags) ? u.ownedTags : [];
+    const highscores = u.highscores || { sorting: 0, quiz: 0 };
+    res.json({ coins, ownedTags, highscores });
+});
+
+// Save score for a game and award coins for new highscore
+app.post('/api/score', (req, res) => {
+    if (!req.session || !req.session.user) return res.status(401).json({ message: 'Not authorized' });
+    const { game, score } = req.body || {};
+    if (!game || typeof score !== 'number') return res.status(400).json({ error: 'Missing game or score' });
+    const users = loadUsers();
+    const username = req.session.user.username;
+    const u = users[username] || (users[username] = { username, created: Date.now() });
+    if (!u.highscores) u.highscores = { sorting: 0, quiz: 0 };
+    const prev = u.highscores[game] || 0;
+    let awarded = 0;
+    if (score > prev) {
+        u.highscores[game] = score;
+        // award coins as floor(score / 10)
+        awarded = Math.floor(score / 10);
+        u.coins = (u.coins || 0) + awarded;
+        saveUsers(users);
+    }
+    res.json({ success: true, newHigh: score > prev, awarded, highscores: u.highscores, coins: u.coins || 0 });
+});
+
+// Purchase a tag
+const TAGS = [
+    // 20 sample tags with costs and rarity
+    { id: 'green-1', name: 'Green Sprout', cost: 10, rarity: 'common' },
+    { id: 'green-2', name: 'Leaf Collector', cost: 20, rarity: 'common' },
+    { id: 'green-3', name: 'Eco Friend', cost: 30, rarity: 'common' },
+    { id: 'green-4', name: 'Tree Hugger', cost: 40, rarity: 'uncommon' },
+    { id: 'green-5', name: 'Recycle Pro', cost: 50, rarity: 'uncommon' },
+    { id: 'green-6', name: 'Compost King', cost: 60, rarity: 'uncommon' },
+    { id: 'green-7', name: 'Sustain Guru', cost: 75, rarity: 'rare' },
+    { id: 'green-8', name: 'Planet Pal', cost: 90, rarity: 'rare' },
+    { id: 'green-9', name: 'Forest Friend', cost: 110, rarity: 'rare' },
+    { id: 'green-10', name: 'Eco Guardian', cost: 140, rarity: 'epic' },
+    { id: 'green-11', name: 'Green Baron', cost: 180, rarity: 'epic' },
+    { id: 'green-12', name: 'Leaf Knight', cost: 220, rarity: 'legendary' },
+    { id: 'green-13', name: 'The Great Tree', cost: 300, rarity: 'legendary' },
+    { id: 'green-14', name: 'Green Emperor', cost: 350, rarity: 'legendary' },
+    { id: 'green-15', name: 'Sapling Star', cost: 25, rarity: 'common' },
+    { id: 'green-16', name: 'Branch Buddy', cost: 35, rarity: 'common' },
+    { id: 'green-17', name: 'Garden Guru', cost: 55, rarity: 'uncommon' },
+    { id: 'green-18', name: 'Earth Ally', cost: 95, rarity: 'rare' },
+    { id: 'green-19', name: 'Nature Noble', cost: 160, rarity: 'epic' },
+    { id: 'green-20', name: 'Verdant Voice', cost: 250, rarity: 'legendary' }
+];
+
+app.get('/api/tags', (req, res) => {
+    res.json({ tags: TAGS });
+});
+
+app.post('/api/purchase-tag', (req, res) => {
+    if (!req.session || !req.session.user) return res.status(401).json({ message: 'Not authorized' });
+    const { id } = req.body || {};
+    if (!id) return res.status(400).json({ error: 'Missing tag id' });
+    const tag = TAGS.find(t => t.id === id);
+    if (!tag) return res.status(404).json({ error: 'Tag not found' });
+    const users = loadUsers();
+    const u = users[req.session.user.username] || (users[req.session.user.username] = { username: req.session.user.username, created: Date.now() });
+    u.coins = u.coins || 0;
+    u.ownedTags = u.ownedTags || [];
+    if (u.ownedTags.includes(id)) return res.status(400).json({ error: 'Already owned' });
+    if (u.coins < tag.cost) return res.status(400).json({ error: 'Insufficient coins' });
+    u.coins -= tag.cost;
+    u.ownedTags.push(id);
+    saveUsers(users);
+    res.json({ success: true, coins: u.coins, ownedTags: u.ownedTags });
+});
+
+// DIY Suggestion endpoint (Groq API)
+app.post('/api/diy-suggestions', async (req, res) => {
+    try {
+        const { items } = req.body;
+        if (!items || typeof items !== 'string' || items.trim().length === 0) {
+            return res.status(400).json({ error: 'Please provide items' });
+        }
+
+        const groqApiKey = process.env.GROQ_API_KEY;
+        if (!groqApiKey) {
+            return res.status(500).json({ error: 'Groq API key not configured' });
+        }
+
+        const prompt = `I have these items: ${items}. 
+
+Suggest 3-5 DIY eco-friendly projects I can make from these items. 
+For each suggestion, provide:
+1. Project name
+2. Description (1-2 sentences)
+3. Usability score (1-10): how practical/useful is it?
+4. Eco-friendly score (1-10): how environmentally friendly?
+5. Fun score (1-10): how enjoyable/interesting?
+
+Format as JSON array with fields: name, description, usability, ecoFriendly, fun`;
+
+        console.log('Calling Groq API with items:', items);
+
+        const modelToUse = process.env.GROQ_MODEL || 'groq/compound';
+
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${groqApiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: modelToUse,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.7,
+                max_tokens: 1024
+            })
+        });
+
+        console.log('Groq API response status:', response.status);
+
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            console.error('Groq API error details:', errData);
+            // If the model was decommissioned, return a helpful message to the client
+            if (errData && errData.error && errData.error.code === 'model_decommissioned') {
+                return res.status(422).json({
+                    error: 'model_decommissioned',
+                    message: errData.error.message || 'Model decommissioned',
+                    triedModel: modelToUse,
+                    help: 'Set the environment variable GROQ_MODEL to a supported model. See https://console.groq.com/docs/deprecations'
+                });
+            }
+            return res.status(response.status).json({ error: 'Groq API error', details: errData, triedModel: modelToUse });
+        }
+
+        const data = await response.json();
+        console.log('Groq API response:', data);
+
+        const text = data.choices?.[0]?.message?.content || '';
+
+        // Extract JSON from response
+        let jsonMatch = text.match(/\[\s*\{[\s\S]*\}\s*\]/);
+        if (!jsonMatch && text.includes('{')) {
+            const startIdx = text.indexOf('[');
+            const endIdx = text.lastIndexOf(']') + 1;
+            if (startIdx !== -1 && endIdx > startIdx) {
+                jsonMatch = [text.substring(startIdx, endIdx)];
+            }
+        }
+
+        let suggestions = [];
+        try {
+            if (jsonMatch) {
+                suggestions = JSON.parse(jsonMatch[0]);
+            } else {
+                suggestions = [{ error: 'Could not parse suggestions', raw: text }];
+            }
+        } catch (parseErr) {
+            suggestions = [{ error: 'JSON parse error', raw: text }];
+        }
+
+        res.json({ success: true, suggestions, raw: text });
+    } catch (err) {
+        console.error('DIY endpoint error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// serve frontend static files optionally
+app.use(express.static(path.join(__dirname)));
+
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

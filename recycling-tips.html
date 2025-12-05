@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recycling Tips — EcoWaste Info</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* page-specific tweaks kept local */
+        body {
+            background: white;
+            color: #1c8c3a;
+        }
+
+        .section {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            padding: 40px 20px;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .green {
+            background: #e6ffe6;
+        }
+
+        .white {
+            background: #ffffff;
+        }
+
+        iframe {
+            width: 100%;
+            max-width: 500px;
+            height: 280px;
+            border: 3px solid #1c8c3a;
+            border-radius: 8px;
+        }
+
+        .text-box {
+            max-width: 500px;
+            line-height: 1.6;
+            font-size: 18px;
+        }
+
+        @media (max-width: 600px) {
+            iframe {
+                height: 220px;
+            }
+        }
+
+        /* DIY Suggestion Section Styles */
+        .diy-section {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .diy-section h2 {
+            text-align: center;
+            color: #1c8c3a;
+            margin-bottom: 20px;
+        }
+
+        .diy-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .diy-input-group input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #1c8c3a;
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: Arial, sans-serif;
+        }
+
+        .diy-input-group input:focus {
+            outline: none;
+            border-color: #2E7D32;
+            box-shadow: 0 0 5px rgba(46, 125, 50, 0.3);
+        }
+
+        .diy-input-group button {
+            padding: 12px 24px;
+            background-color: #2E7D32;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 200ms ease;
+        }
+
+        .diy-input-group button:hover {
+            background-color: #1B5E20;
+        }
+
+        .diy-input-group button:disabled {
+            background-color: #999;
+            cursor: not-allowed;
+        }
+
+        .diy-loading {
+            text-align: center;
+            color: #2E7D32;
+            font-weight: bold;
+            display: none;
+            margin: 20px 0;
+        }
+
+        .diy-suggestions {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .diy-suggestion-card {
+            background: white;
+            padding: 18px;
+            border-left: 5px solid #2E7D32;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .diy-suggestion-card h3 {
+            margin: 0 0 8px 0;
+            color: #1c8c3a;
+            font-size: 18px;
+        }
+
+        .diy-suggestion-card p {
+            margin: 8px 0;
+            color: #555;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .diy-scores {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .diy-score {
+            background: #f0f8f0;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .diy-score-label {
+            color: #666;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .diy-score-value {
+            color: #2E7D32;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 4px;
+        }
+
+        .diy-error {
+            color: #d32f2f;
+            padding: 15px;
+            background: #ffebee;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Bar (shared with index.html) -->
+    <nav>
+        <div class="nav-left">
+            <h1>EcoWaste</h1>
+        </div>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="recycling-tips.html">Recycling Tips</a>
+            <div class="nav-dropdown">
+                <a href="#">Games</a>
+                <div class="dropdown-menu">
+                    <a href="sorting-game.html">Sorting Game</a>
+                    <a href="index.html#games">Quiz Game</a>
+                </div>
+            </div>
+            <a href="index.html#contact">Contact</a>
+        </div>
+
+        <div class="login-btn" id="userSection">
+            <button id="authBtn"
+                style="background-color: #1B5E20; padding: 10px 18px; border-radius: 5px; color: white; border: none; font-weight: bold; cursor: pointer; font-size: 16px;">Login</button>
+        </div>
+
+        <div class="profile-section hidden" id="profileSection">
+            <div class="profile-container">
+                <span id="profileUsername" class="profile-username"></span>
+                <div class="profile-icon">👤</div>
+                <div class="profile-menu hidden" id="profileMenu">
+                    <button id="logoutBtn" class="profile-logout">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Auth Modal (same as index) -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Login</button>
+                <button class="auth-tab" data-tab="signup">Sign Up</button>
+            </div>
+
+            <div id="authLoginTab" class="auth-tab-content active">
+                <h3>Log In</h3>
+                <form id="indexLoginForm">
+                    <input type="text" id="index-login-username" placeholder="Username" required>
+                    <input type="password" id="index-login-password" placeholder="Password" required>
+                    <button type="submit" class="auth-submit-btn">Log In</button>
+                    <div id="index-login-msg" class="auth-msg"></div>
+                </form>
+            </div>
+
+            <div id="authSignupTab" class="auth-tab-content">
+                <h3>Sign Up</h3>
+                <form id="indexSignupForm">
+                    <input type="text" id="index-signup-username" placeholder="Username" required>
+                    <input type="password" id="index-signup-password" placeholder="Password" required>
+                    <input type="password" id="index-signup-password2" placeholder="Confirm Password" required>
+                    <button type="submit" class="auth-submit-btn">Sign Up</button>
+                    <div id="index-signup-msg" class="auth-msg"></div>
+                </form>
+            </div>
+
+            <button id="closeAuthModal" class="auth-close-btn">×</button>
+        </div>
+    </div>
+
+    <br><br>
+
+    <!-- DIY Suggestion AI Section -->
+    <div class="diy-section">
+        <h2>🤖 AI DIY Project Suggester</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">Tell us what items you have, and our AI will
+            suggest fun DIY projects you can make!</p>
+        <div class="diy-input-group">
+            <input type="text" id="diyItemsInput"
+                placeholder="e.g., plastic bottles, old newspapers, glass jars, wood scraps..." />
+            <button id="diyGetSuggestionsBtn">Get Suggestions</button>
+        </div>
+        <div class="diy-loading" id="diyLoading">Loading suggestions...</div>
+        <div class="diy-suggestions" id="diySuggestions"></div>
+    </div>
+
+    <!-- SECTION 1 -->
+    <div class="section green">
+        <iframe src="https://www.youtube.com/embed/PKGMpepoozo?si=e7Oq6-clX3OYOMtR" allowfullscreen></iframe>
+        <div class="text-box">
+            <h2>Make two amazing wall hanging decorations from waste</h2>
+            <p>
+                With just some old waste materials, you can make such beautiful arts to spice up your walls!
+            </p>
+        </div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="section white">
+        <iframe src="https://www.youtube.com/embed/VdohdU2uOBQ?si=wKc1DGMolYzbpTrn" allowfullscreen></iframe>
+        <div class="text-box">
+            <h2>DIY Cute Cat Pen Holder</h2>
+            <p>
+                Reuse plastic bottles to create eco-friendly pen holder. Paint them, decorate them,
+                and use them!
+            </p>
+        </div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="section green">
+        <iframe src="https://www.youtube.com/embed/QmSO38x52r8?si=eeVCYxhMGoPiAqu2" allowfullscreen></iframe>
+        <div class="text-box">
+            <h2>Make a Water Dispenser from Waste Cartons</h2>
+            <p>
+                Old cartons can be folded into strong water dispenser with water holding capacity
+                This tutorial shows the entire process step-by-step.
+            </p>
+        </div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="section white">
+        <iframe src="https://www.youtube.com/embed/iwDV1uPLOFk?si=jxSYEcmziPalujsV" allowfullscreen></iframe>
+        <div class="text-box">
+            <h2>DIY Lamps from Plastic Bottles</h2>
+            <p>
+                Transform plastic bottles into beautiful decorations.
+                Perfect for decoration & gifting.
+            </p>
+        </div>
+    </div>
+
+    <!-- SECTION 5 -->
+    <div class="section green">
+        <iframe src="https://www.youtube.com/embed/aE3wygs1jxk?si=Cygeji3etcQ1d_3p" allowfullscreen></iframe>
+        <div class="text-box">
+            <h2>Convert Plastic Bottle into a Medieval Art</h2>
+            <p>
+                Create beautiful ancient art pieces using waste plastic.
+                A fun way to recycle while boosting creativity!
+            </p>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+
+    <script>
+        // DIY Suggestion logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const itemsInput = document.getElementById('diyItemsInput');
+            const suggestBtn = document.getElementById('diyGetSuggestionsBtn');
+            const loadingDiv = document.getElementById('diyLoading');
+            const suggestionsDiv = document.getElementById('diySuggestions');
+
+            suggestBtn.addEventListener('click', async () => {
+                const items = itemsInput.value.trim();
+                if (!items) {
+                    alert('Please enter some items you have.');
+                    return;
+                }
+
+                suggestBtn.disabled = true;
+                loadingDiv.style.display = 'block';
+                suggestionsDiv.innerHTML = '';
+
+                try {
+                    const response = await fetch('/api/diy-suggestions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ items })
+                    });
+
+                    if (!response.ok) {
+                        const err = await response.json();
+                        throw new Error(err.error || 'Failed to get suggestions');
+                    }
+
+                    const data = await response.json();
+                    const suggestions = data.suggestions || [];
+
+                    if (!Array.isArray(suggestions) || suggestions.length === 0) {
+                        suggestionsDiv.innerHTML = '<div class="diy-error">No suggestions found. Please try again.</div>';
+                    } else {
+                        suggestionsDiv.innerHTML = suggestions.map(suggestion => {
+                            if (suggestion.error) {
+                                return '<div class="diy-error">' + (suggestion.error || 'Unknown error') + '</div>';
+                            }
+                            return '<div class="diy-suggestion-card">' +
+                                '<h3>' + (suggestion.name || 'DIY Project') + '</h3>' +
+                                '<p>' + (suggestion.description || 'No description provided') + '</p>' +
+                                '<div class="diy-scores">' +
+                                '<div class="diy-score">' +
+                                '<div class="diy-score-label">Usability</div>' +
+                                '<div class="diy-score-value">' + (suggestion.usability || '-') + '/10</div>' +
+                                '</div>' +
+                                '<div class="diy-score">' +
+                                '<div class="diy-score-label">Eco-Friendly</div>' +
+                                '<div class="diy-score-value">' + (suggestion.ecoFriendly || '-') + '/10</div>' +
+                                '</div>' +
+                                '<div class="diy-score">' +
+                                '<div class="diy-score-label">Fun</div>' +
+                                '<div class="diy-score-value">' + (suggestion.fun || '-') + '/10</div>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>';
+                        }).join('');
+                    }
+                } catch (error) {
+                    suggestionsDiv.innerHTML = `<div class="diy-error">Error: ${error.message}</div>`;
+                } finally {
+                    suggestBtn.disabled = false;
+                    loadingDiv.style.display = 'none';
+                }
+            });
+
+            // Allow Enter key to submit
+            itemsInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    suggestBtn.click();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
