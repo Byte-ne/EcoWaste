@@ -2,6 +2,53 @@
   "Tanay Mishra": {
     "username": "Tanay Mishra",
     "passwordHash": "$2b$10$BCzOUMCsOH2sACdxDhOJOu1hnce1tzoAjRkTowQ9bhPHoIP.YPIOO",
-    "created": 1764909530441
+    "created": 1764909530441,
+    "highscores": {
+      "sorting": 30,
+      "quiz": 200
+    },
+    "coins": 3,
+    "ownedTags": [
+      "green-2"
+    ]
+  },
+  "kbaskar": {
+    "username": "kbaskar",
+    "passwordHash": "$2b$10$5sgXpARC5m14PiErUQl3mOvHE2QhQQ3BE33CucoeRcdn76QflWhAi",
+    "created": 1764926299111,
+    "highscores": {
+      "sorting": 69,
+      "quiz": 100
+    },
+    "coins": 6,
+    "ownedTags": [
+      "green-1"
+    ]
+  },
+  "practice": {
+    "username": "practice",
+    "passwordHash": "$2b$10$EiPWzQa0dK8ol4edy3Ucl.0ooAnemi80fj55NqHtiQgfbSlugbYra",
+    "created": 1764927691241,
+    "highscores": {
+      "sorting": 2,
+      "quiz": 100
+    },
+    "coins": 0,
+    "ownedTags": [
+      "green-1"
+    ]
+  },
+  "practice2": {
+    "username": "practice2",
+    "passwordHash": "$2b$10$eas4fF7SSBCD.OhXotzwwu5.VgcuoP2cyicjQzx/TGAWeVwM1QJF.",
+    "created": 1764928004010,
+    "highscores": {
+      "sorting": 70,
+      "quiz": 100
+    },
+    "coins": 7,
+    "ownedTags": [
+      "green-1"
+    ]
   }
 }

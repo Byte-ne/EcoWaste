@@ -4,136 +4,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Waste Sorting Game</title>
+    <title>Waste Sorting Game — EcoWaste</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-            color: #1c8c3a;
-        }
-
         .game-header {
-            width: 100%;
-            background-color: #2E7D32;
+            background: linear-gradient(135deg, #2E7D32 0%, #1e5f28 100%);
             color: white;
-            padding: 15px 20px;
+            padding: 20px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
         }
 
         .game-header h1 {
             font-size: 28px;
-            font-weight: bold;
+            font-weight: 700;
+            font-family: 'Outfit', 'Poppins', sans-serif;
+            letter-spacing: -0.5px;
         }
 
         .back-btn {
-            background-color: #1B5E20;
+            background: rgba(255, 255, 255, 0.2);
             color: white;
-            border: none;
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
             padding: 10px 18px;
-            border-radius: 6px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 14px;
-            font-weight: bold;
-            transition: background-color 200ms ease;
+            font-weight: 600;
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
         }
 
         .back-btn:hover {
-            background-color: #144a18;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .game-container {
-            width: 100%;
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 1000px;
+            padding: 40px 32px;
+            max-width: 1100px;
             margin: 0 auto;
+            width: 100%;
         }
 
         .stats-container {
-            display: flex;
-            gap: 40px;
-            margin-bottom: 30px;
-            justify-content: center;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
             width: 100%;
         }
 
         .stat-box {
-            background: white;
-            padding: 15px 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-            border-left: 4px solid #2E7D32;
+            background: linear-gradient(135deg, #fff 0%, #f8fafb 100%);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 2px solid #e8eaed;
             text-align: center;
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stat-box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            border-color: #2E7D32;
         }
 
         .stat-label {
-            font-size: 13px;
-            color: #666;
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-size: 12px;
+            color: #6B7280;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .stat-value {
-            font-size: 28px;
+            font-size: 32px;
             color: #2E7D32;
-            font-weight: bold;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
         }
 
         #sidewalk {
             position: relative;
             width: 100%;
-            min-height: 220px;
-            background: white;
-            border: 2px dashed #1c8c3a;
-            border-radius: 8px;
-            margin: 20px 0;
+            min-height: 240px;
+            background: linear-gradient(135deg, #fff 0%, #f8fafb 100%);
+            border: 2.5px dashed #2E7D32;
+            border-radius: 14px;
+            margin: 24px 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: 16px;
             flex-wrap: wrap;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 300ms ease;
+        }
+
+        #sidewalk.active {
+            background: linear-gradient(135deg, #f0fef0 0%, #e8fde8 100%);
+            border-color: #1e5f28;
         }
 
         #startBtn {
-            padding: 14px 30px;
-            background: #2E7D32;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #2E7D32 0%, #1e5f28 100%);
             color: white;
             border: none;
-            font-size: 18px;
-            border-radius: 8px;
+            font-size: 16px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: bold;
-            transition: background-color 200ms ease;
+            font-weight: 600;
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+            font-family: 'Poppins', sans-serif;
         }
 
         #startBtn:hover {
-            background-color: #1B5E20;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(46, 125, 50, 0.4);
+        }
+
+        #startBtn:active {
+            transform: translateY(-1px);
         }
 
         .item {
-            padding: 10px 16px;
-            background: #e8ffe8;
-            border: 2px solid #1c8c3a;
-            border-radius: 6px;
+            padding: 12px 18px;
+            background: linear-gradient(135deg, #e8ffe8 0%, #d0ffd0 100%);
+            border: 2.5px solid #2E7D32;
+            border-radius: 10px;
             cursor: grab;
             user-select: none;
             display: none;
-            font-weight: bold;
-            transition: transform 100ms ease;
+            font-weight: 600;
+            transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(46, 125, 50, 0.15);
+            font-size: 14px;
+            animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+        }
+
+        .item:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .item:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .item:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        .item:nth-child(5) {
+            animation-delay: 0.4s;
+        }
+
+        .item:nth-child(6) {
+            animation-delay: 0.5s;
+        }
+
+        .item:nth-child(7) {
+            animation-delay: 0.6s;
+        }
+
+        .item:nth-child(8) {
+            animation-delay: 0.7s;
         }
 
         .item:active {
@@ -141,113 +184,77 @@
         }
 
         .item:hover {
-            transform: scale(1.05);
+            transform: scale(1.08);
+            box-shadow: 0 6px 16px rgba(46, 125, 50, 0.25);
+        }
+
+        .item.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
         }
 
         #countdown {
             position: absolute;
             font-size: 80px;
-            font-weight: bold;
+            font-weight: 700;
             opacity: 0;
             transform: scale(0.5);
             color: #2E7D32;
             animation: pop 1s ease forwards;
             pointer-events: none;
             display: none;
-        }
-
-        @keyframes pop {
-            0% {
-                opacity: 0;
-                transform: scale(0.5);
-            }
-
-            40% {
-                opacity: 1;
-                transform: scale(1.2);
-            }
-
-            100% {
-                opacity: 0;
-                transform: scale(1);
-            }
+            font-family: 'Outfit', sans-serif;
         }
 
         #bins {
-            margin: 30px 0;
-            display: flex;
-            gap: 30px;
-            flex-wrap: wrap;
-            justify-content: center;
+            margin: 32px 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 24px;
             width: 100%;
         }
 
         .bin {
-            width: 160px;
-            height: 160px;
-            border: 4px solid #1c8c3a;
-            border-radius: 10px;
+            width: 100%;
+            aspect-ratio: 1;
+            border: 3px solid #1c8c3a;
+            border-radius: 14px;
             text-align: center;
             padding: 20px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: #f6fff6;
+            background: linear-gradient(135deg, #f6fff6 0%, #e8ffe8 100%);
             cursor: pointer;
-            transition: all 200ms ease;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
         .bin:hover {
-            background: #e2ffe2;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            background: linear-gradient(135deg, #e2ffe2 0%, #d0ffd0 100%);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(46, 125, 50, 0.15);
+            border-color: #1e5f28;
         }
 
         .bin.invalid {
-            background: #ffe6e6 !important;
+            background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 100%) !important;
             border-color: #ff4d4d;
             color: #b30000;
             animation: shake 0.4s;
         }
 
-        @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-
-            25% {
-                transform: translateX(-8px);
-            }
-
-            75% {
-                transform: translateX(8px);
-            }
-        }
-
         .bin[data-bin="recycle"] {
-            background: #e6f0ff;
+            background: linear-gradient(135deg, #e6f0ff 0%, #d6e9ff 100%);
             border-color: #2b6fe6;
             color: #0b4dbb;
         }
 
         .bin[data-bin="recycle"]:hover {
-            background: #d6e9ff;
-        }
-
-        .bin[data-bin="organic"] {
-            background: #f6fff6;
-            border-color: #1c8c3a;
-            color: #1c8c3a;
-        }
-
-        .bin[data-bin="organic"]:hover {
-            background: #e2ffe2;
+            background: linear-gradient(135deg, #d6e9ff 0%, #c6deff 100%);
         }
 
         #popup {
@@ -257,80 +264,128 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        #popup.active {
+            display: flex;
         }
 
         #popupContent {
-            background: white;
+            background: linear-gradient(135deg, #fff 0%, #f8fafb 100%);
             padding: 40px;
-            border-radius: 12px;
+            border-radius: 16px;
             text-align: center;
-            border: 3px solid #2E7D32;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-            max-width: 400px;
+            border: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            max-width: 420px;
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         #popupContent h2 {
             color: #2E7D32;
             font-size: 28px;
             margin-bottom: 20px;
+            font-weight: 700;
         }
 
         #popupContent p {
-            color: #666;
+            color: #6B7280;
             font-size: 16px;
-            margin-bottom: 15px;
+            margin-bottom: 14px;
             line-height: 1.6;
         }
 
         .popup-buttons {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: center;
-            margin-top: 25px;
+            margin-top: 28px;
         }
 
         .popup-buttons button {
             padding: 12px 24px;
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             font-size: 15px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 200ms ease;
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Poppins', sans-serif;
         }
 
         .play-again-btn {
-            background: #2E7D32;
+            background: linear-gradient(135deg, #2E7D32 0%, #1e5f28 100%);
             color: white;
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
         }
 
         .play-again-btn:hover {
-            background: #1B5E20;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(46, 125, 50, 0.4);
         }
 
         .back-home-btn {
-            background: #e0e0e0;
-            color: #666;
+            background: #e8eaed;
+            color: #1F2937;
+            transition: all 300ms ease;
         }
 
         .back-home-btn:hover {
-            background: #ccc;
+            background: #d8dce2;
+            transform: translateY(-2px);
         }
 
         #finalScore {
             font-size: 18px;
-            font-weight: bold;
+            font-weight: 700;
             color: #2E7D32;
         }
 
         #highScoreInfo {
             font-size: 14px;
-            color: #999;
-            margin-top: 15px;
+            color: #6B7280;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .game-header {
+                padding: 16px;
+            }
+
+            .game-container {
+                padding: 24px 16px;
+            }
+
+            .stats-container {
+                gap: 16px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            #bins {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            #popupContent {
+                padding: 32px;
+                max-width: 90vw;
+            }
+
+            .popup-buttons {
+                flex-direction: column;
+            }
+
+            .popup-buttons button {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -340,6 +395,7 @@
         <h1>🎮 Waste Sorting Game</h1>
         <button class="back-btn" onclick="goBack()">← Back</button>
     </div>
+
     <div class="game-container">
         <div class="stats-container">
             <div class="stat-box">
@@ -355,26 +411,29 @@
                 <div class="stat-value" id="highScore">0</div>
             </div>
         </div>
+
         <div id="sidewalk">
-            <button id="startBtn">Start Game</button>
+            <button id="startBtn">🚀 Start Game</button>
             <div id="countdown"></div>
             <div class="item" draggable="true" data-type="recycle">♻ Tin Can</div>
             <div class="item" draggable="true" data-type="organic">🍊 Orange Peel</div>
             <div class="item" draggable="true" data-type="recycle">🥫 Glass Jar</div>
             <div class="item" draggable="true" data-type="organic">🍵 Tea Leaves</div>
-            <div class="item" draggable="true" data-type="recycle">📦 Cardboard Box</div>
+            <div class="item" draggable="true" data-type="recycle">📦 Cardboard</div>
             <div class="item" draggable="true" data-type="organic">🥥 Coconut Shell</div>
             <div class="item" draggable="true" data-type="recycle">⚙ Metal Cap</div>
             <div class="item" draggable="true" data-type="organic">🥬 Veg Scraps</div>
         </div>
+
         <div id="bins">
-            <div class="bin" data-bin="recycle">♻ Recyclable<br><small>(Blue Bin)</small></div>
-            <div class="bin" data-bin="organic">🌱 Organic<br><small>(Green Bin)</small></div>
+            <div class="bin" data-bin="recycle">♻ <span>Recyclable</span><br><small>(Blue Bin)</small></div>
+            <div class="bin" data-bin="organic">🌱 <span>Organic</span><br><small>(Green Bin)</small></div>
         </div>
     </div>
+
     <div id="popup">
         <div id="popupContent">
-            <h2>Game Over! 🎉</h2>
+            <h2>🎉 Game Over!</h2>
             <p id="finalScore"></p>
             <p id="highScoreInfo"></p>
             <div class="popup-buttons">
@@ -383,21 +442,27 @@
             </div>
         </div>
     </div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
     <script>
         function loadHighScore() {
             return parseInt(localStorage.getItem("sortingGameHighScore") || "0", 10);
         }
+
         function saveHighScore(score) {
             localStorage.setItem("sortingGameHighScore", score);
         }
+
         function goBack() {
             const referrer = document.referrer;
             if (referrer.includes("recycling-tips")) {
                 window.location.href = "recycling-tips.html";
             } else {
-                window.location.href = "index.html#games";
+                window.location.href = "index.html";
             }
         }
+
         let draggedItem = null;
         let score = 0;
         let correctDrops = 0;
@@ -412,7 +477,9 @@
         const highScoreBox = document.getElementById("highScore");
         const startBtn = document.getElementById("startBtn");
         const countdown = document.getElementById("countdown");
+
         highScoreBox.textContent = highScore;
+
         function shuffleItems() {
             const container = document.getElementById("sidewalk");
             const elems = Array.from(container.querySelectorAll(".item"));
@@ -423,6 +490,7 @@
             }
             elems.forEach(e => container.appendChild(e));
         }
+
         function startCountdown() {
             let number = 3;
             countdown.style.display = "block";
@@ -443,7 +511,9 @@
             }
             showNumber();
         }
+
         function startGame() {
+            document.getElementById("sidewalk").classList.add("active");
             shuffleItems();
             items.forEach(i => i.style.display = "block");
             timerInterval = setInterval(() => {
@@ -451,19 +521,23 @@
                 timerBox.textContent = time + "s";
             }, 1000);
         }
+
         startBtn.addEventListener("click", () => {
             startBtn.style.display = "none";
             startCountdown();
         });
+
         items.forEach(item => {
             item.addEventListener("dragstart", () => {
                 draggedItem = item;
-                setTimeout(() => item.style.opacity = "0.3", 0);
+                setTimeout(() => item.classList.add("dragging"), 0);
             });
+
             item.addEventListener("dragend", () => {
-                item.style.opacity = "1";
+                item.classList.remove("dragging");
             });
         });
+
         bins.forEach(bin => {
             bin.addEventListener("dragover", e => e.preventDefault());
             bin.addEventListener("drop", () => {
@@ -484,24 +558,51 @@
                 if (document.querySelectorAll(".item").length === 0) endGame();
             });
         });
-        function endGame() {
+
+        async function endGame() {
             clearInterval(timerInterval);
             const accuracy = (initialTotalItems > 0) ? (correctDrops / initialTotalItems) * 100 : 0;
             const finalScoreValue = Math.max(0, score * 10 - time);
             let isNewHighScore = false;
+
             if (finalScoreValue > highScore) {
                 highScore = finalScoreValue;
                 saveHighScore(highScore);
                 isNewHighScore = true;
             }
+
             document.getElementById("finalScore").textContent =
-                "Your Final Score: " + finalScoreValue + "\nAccuracy: " + accuracy.toFixed(0) + "%";
+                "Your Final Score: " + finalScoreValue + " • Accuracy: " + accuracy.toFixed(0) + "%";
+
             if (isNewHighScore) {
                 document.getElementById("highScoreInfo").textContent = "🎊 New High Score! 🎊";
             } else {
                 document.getElementById("highScoreInfo").textContent = "High Score: " + highScore;
             }
-            document.getElementById("popup").style.display = "flex";
+
+            document.getElementById("popup").classList.add("active");
+
+            try {
+                const resp = await fetch('/api/score', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ game: 'sorting', score: finalScoreValue })
+                });
+                const body = await resp.json().catch(() => ({}));
+                if (resp.ok && body.awarded) {
+                    const awardEl = document.createElement('div');
+                    awardEl.textContent = '✨ Earned ' + body.awarded + ' 🍃 coins!';
+                    awardEl.style.color = '#2E7D32';
+                    awardEl.style.marginTop = '12px';
+                    awardEl.style.fontWeight = '600';
+                    document.getElementById('popupContent').appendChild(awardEl);
+                    const coinsEl = document.getElementById('profileCoins');
+                    if (coinsEl) coinsEl.textContent = '🍃 ' + (body.coins || 0);
+                }
+            } catch (e) {
+                // ignore
+            }
         }
     </script>
 </body>

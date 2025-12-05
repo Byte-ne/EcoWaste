@@ -1,0 +1,13 @@
+# Reference of Node dependencies (for quick install reference)
+# Use `npm install` to install these from package.json instead.
+express==4.18.2
+bcrypt==5.1.0
+cors==2.8.5
+express-session==1.17.3
+
+# dev
+nodemon==2.0.22
+
+# Notes:
+# - This file is provided as a convenience. For Node projects use package.json and `npm install`.
+# - If you want a Python-style requirements file for a Python environment, tell me and I'll generate one.

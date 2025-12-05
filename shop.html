@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Green Shop — EcoWaste</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .shop-header {
+            background: linear-gradient(135deg, #2E7D32 0%, #1e5f28 100%);
+            color: white;
+            padding: 20px 32px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .shop-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            font-family: 'Outfit', 'Poppins', sans-serif;
+            letter-spacing: -0.5px;
+            margin: 0;
+        }
+
+        .shop-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 32px;
+        }
+
+        .shop-intro {
+            background: linear-gradient(135deg, #f0fef0 0%, #e8fde8 100%);
+            padding: 24px;
+            border-radius: 12px;
+            border: 2px solid #d4f1d4;
+            margin-bottom: 32px;
+            font-size: 15px;
+            color: #1F2937;
+            font-weight: 500;
+        }
+
+        .owned-tags {
+            background: linear-gradient(135deg, #fff 0%, #f8fafb 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e8eaed;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .owned-tags strong {
+            color: #1F2937;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .owned-tags p {
+            color: #6B7280;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        .tags-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .tag-card {
+            background: linear-gradient(135deg, #fff 0%, #f8fafb 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e8eaed;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tag-card:hover:not(.owned) {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            border-color: #2E7D32;
+        }
+
+        .tag-card.owned {
+            opacity: 0.7;
+            background: linear-gradient(135deg, #f0fef0 0%, #e8fde8 100%);
+            border-color: #d4f1d4;
+        }
+
+        .tag-card.legendary {
+            background: linear-gradient(135deg, #fef9e7 0%, #fdf3cc 100%);
+            border: 2px solid #ffb300;
+            box-shadow: 0 6px 20px rgba(255, 179, 0, 0.2);
+        }
+
+        .tag-card.legendary:hover:not(.owned) {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(255, 179, 0, 0.3);
+        }
+
+        .tag-name {
+            font-weight: 700;
+            font-size: 16px;
+            color: #1F2937;
+        }
+
+        .tag-card.legendary .tag-name {
+            color: #b8860b;
+            font-size: 17px;
+        }
+
+        .tag-meta {
+            font-size: 13px;
+            color: #6B7280;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .tag-rarity {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tag-rarity.common {
+            background: #d0ffd0;
+            color: #0b4d0b;
+        }
+
+        .tag-rarity.uncommon {
+            background: #c6deff;
+            color: #0b4dbb;
+        }
+
+        .tag-rarity.rare {
+            background: #e6d5ff;
+            color: #5a0098;
+        }
+
+        .tag-rarity.epic {
+            background: #ffe6c6;
+            color: #994500;
+        }
+
+        .tag-rarity.legendary {
+            background: #ffd700;
+            color: #654321;
+        }
+
+        .tag-cost {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2E7D32;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .buy-btn {
+            background: linear-gradient(135deg, #2E7D32 0%, #1e5f28 100%);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 2px 8px rgba(46, 125, 50, 0.15);
+        }
+
+        .buy-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(46, 125, 50, 0.25);
+        }
+
+        .buy-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #9E9E9E;
+        }
+
+        @media (max-width: 768px) {
+            .shop-header {
+                padding: 16px;
+            }
+
+            .shop-container {
+                padding: 24px 16px;
+            }
+
+            .tags-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+
+            .tag-meta {
+                flex-direction: column;
+                gap: 6px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-left">
+            <h1>EcoWaste</h1>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="recycling-tips.html">Recycling Tips</a>
+            <div class="nav-dropdown"><a href="#">Games</a>
+                <div class="dropdown-menu">
+                    <a href="sorting-game.html">Sorting Game</a>
+                    <a href="quiz-game.html">Quiz Game</a>
+                </div>
+            </div>
+            <a href="shop.html">Shop</a>
+        </div>
+        <div class="login-btn" id="userSection"><button id="authBtn"
+                style="background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%); color:#fff; padding:10px 20px; border-radius:8px; border:none; font-weight:600; cursor:pointer; font-size:14px; transition: all 300ms ease; box-shadow: 0 4px 12px rgba(0,0,0,0.12);">Login</button>
+        </div>
+        <div class="profile-section hidden" id="profileSection">
+            <div class="profile-container">
+                <span id="profileCoins" class="profile-coins">🍃 0</span>
+                <span id="profileUsername" class="profile-username"></span>
+                <div class="profile-icon">👤</div>
+                <div class="profile-menu hidden" id="profileMenu"><button id="logoutBtn"
+                        class="profile-logout">Logout</button></div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="shop-header">
+        <h2>🌱 Green Shop — Earn & Collect Tags</h2>
+    </div>
+    <div class="shop-container">
+        <div class="shop-intro">
+            💰 Spend your 🍃 leaves to buy exclusive profile TAGS. Show off your eco-friendly achievements! Higher-tier
+            tags are rarer and more legendary.
+        </div>
+
+        <div class="owned-tags">
+            <strong>✨ Your Tags:</strong>
+            <p id="ownedTagsDisplay">Loading...</p>
+        </div>
+
+        <div class="tags-grid" id="tagsGrid"></div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+    <script>
+        (async function () {
+            const grid = document.getElementById('tagsGrid');
+            const ownedEl = document.getElementById('ownedTagsDisplay');
+
+            async function load() {
+                try {
+                    const tRes = await fetch('/api/tags');
+                    const tJson = await tRes.json().catch(() => ({ tags: [] }));
+                    const sRes = await fetch('/api/user-stats', { credentials: 'include' });
+                    const sJson = await sRes.json().catch(() => ({ coins: 0, ownedTags: [] }));
+                    const tags = tJson.tags || [];
+                    grid.innerHTML = '';
+
+                    ownedEl.textContent = (sJson.ownedTags && sJson.ownedTags.length) ? sJson.ownedTags.map(id => tags.find(t => t.id === id)?.name || id).join(', ') : 'None yet — complete games to earn coins!';
+
+                    tags.forEach(t => {
+                        const c = document.createElement('div');
+                        c.className = 'tag-card';
+                        if (t.rarity === 'legendary') c.classList.add('legendary');
+                        const owned = (sJson.ownedTags || []).includes(t.id);
+                        if (owned) c.classList.add('owned');
+
+                        c.innerHTML = '<div class="tag-name">' + (t.rarity === 'legendary' ? '👑 ' : '') + t.name + '</div>';
+
+                        const metaDiv = document.createElement('div');
+                        metaDiv.className = 'tag-meta';
+                        const raritySpan = document.createElement('span');
+                        raritySpan.className = 'tag-rarity ' + t.rarity;
+                        raritySpan.textContent = t.rarity;
+                        const costSpan = document.createElement('span');
+                        costSpan.className = 'tag-cost';
+                        costSpan.textContent = t.cost + ' 🍃';
+                        metaDiv.appendChild(raritySpan);
+                        metaDiv.appendChild(costSpan);
+                        c.appendChild(metaDiv);
+
+                        const btn = document.createElement('button');
+                        btn.className = 'buy-btn';
+                        btn.textContent = owned ? '✓ Owned' : 'Buy Now';
+                        if (owned) { btn.disabled = true; }
+                        btn.addEventListener('click', async () => {
+                            btn.disabled = true;
+                            btn.textContent = '⏳ Buying...';
+                            try {
+                                const r = await fetch('/api/purchase-tag', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: t.id }) });
+                                const b = await r.json().catch(() => ({}));
+                                if (r.ok && b.success) {
+                                    btn.textContent = '✓ Owned';
+                                    btn.disabled = true;
+                                    c.classList.add('owned');
+                                    ownedEl.textContent = (b.ownedTags || []).map(id => tags.find(tag => tag.id === id)?.name || id).join(', ') || 'None';
+                                    const coinsEl = document.getElementById('profileCoins');
+                                    if (coinsEl) coinsEl.textContent = '🍃 ' + (b.coins || 0);
+                                } else {
+                                    alert(b.error || 'Purchase failed');
+                                    btn.disabled = false;
+                                    btn.textContent = 'Buy Now';
+                                }
+                            } catch (err) {
+                                alert('Error: ' + err.message);
+                                btn.disabled = false;
+                                btn.textContent = 'Buy Now';
+                            }
+                        });
+                        c.appendChild(btn);
+                        grid.appendChild(c);
+                    });
+                } catch (err) {
+                    grid.innerHTML = '<div style="color:#d32f2f; padding:20px;">Error loading shop: ' + err.message + '</div>';
+                }
+            }
+
+            load();
+        })();
+    </script>
+</body>
+
+</html>

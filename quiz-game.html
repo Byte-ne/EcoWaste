@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Quiz Game — EcoWaste</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .quiz-header {
+            background: linear-gradient(135deg, #2E7D32 0%, #1e5f28 100%);
+            color: white;
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .quiz-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            font-family: 'Outfit', 'Poppins', sans-serif;
+            letter-spacing: -0.5px;
+        }
+
+        .quiz-header .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .quiz-header .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .quiz-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 32px;
+        }
+
+        .settings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            align-items: flex-end;
+            margin-bottom: 32px;
+            background: linear-gradient(135deg, #fff 0%, #f8fafb 100%);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 2px solid #e8eaed;
+        }
+
+        .settings label {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1F2937;
+        }
+
+        .settings input {
+            padding: 10px 12px;
+            border: 1.5px solid #e8eaed;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 300ms ease;
+        }
+
+        .settings input:focus {
+            outline: none;
+            border-color: #2E7D32;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+
+        #startQuiz {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #2E7D32 0%, #1e5f28 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+            font-family: 'Poppins', sans-serif;
+            white-space: nowrap;
+        }
+
+        #startQuiz:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(46, 125, 50, 0.4);
+        }
+
+        #startQuiz:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .top-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+            background: linear-gradient(135deg, #f0fef0 0%, #e8fde8 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #d4f1d4;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1F2937;
+        }
+
+        .stat-value {
+            color: #2E7D32;
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+        }
+
+        .question-card {
+            background: linear-gradient(135deg, #fff 0%, #f8fafb 100%);
+            padding: 32px;
+            border-radius: 12px;
+            border: 2px solid #e8eaed;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            margin-bottom: 24px;
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .question-card>div:first-child {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1F2937;
+            margin-bottom: 24px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 2px solid #e8eaed;
+            background: linear-gradient(135deg, #fff 0%, #f8fafb 100%);
+            cursor: pointer;
+            text-align: left;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #2E7D32;
+            background: #f0fef0;
+            transform: translateX(4px);
+        }
+
+        .option-btn.correct {
+            border-color: #4CAF50;
+            background: linear-gradient(135deg, #eaffea 0%, #d4f1d4 100%);
+            color: #1B5E20;
+        }
+
+        .option-btn.wrong {
+            border-color: #ff4d4d;
+            background: linear-gradient(135deg, #ffecec 0%, #ffd6d6 100%);
+            color: #b30000;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .small {
+            font-size: 13px;
+            color: #6B7280;
+            font-weight: 500;
+        }
+
+        .time-display {
+            color: #2E7D32;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        @media (max-width: 768px) {
+            .quiz-header {
+                padding: 16px;
+            }
+
+            .quiz-container {
+                padding: 24px 16px;
+            }
+
+            .settings {
+                grid-template-columns: 1fr;
+            }
+
+            .question-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-left">
+            <h1>EcoWaste</h1>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="recycling-tips.html">Recycling Tips</a>
+            <div class="nav-dropdown"><a href="#">Games</a>
+                <div class="dropdown-menu">
+                    <a href="sorting-game.html">Sorting Game</a>
+                    <a href="quiz-game.html">Quiz Game</a>
+                </div>
+            </div>
+            <a href="shop.html">Shop</a>
+        </div>
+        <div class="login-btn" id="userSection"><button id="authBtn"
+                style="background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%); color:#fff; padding:10px 20px; border-radius:8px; border:none; font-weight:600; cursor:pointer; font-size:14px; transition: all 300ms ease; box-shadow: 0 4px 12px rgba(0,0,0,0.12);">Login</button>
+        </div>
+        <div class="profile-section hidden" id="profileSection">
+            <div class="profile-container">
+                <span id="profileCoins" class="profile-coins">🍃 0</span>
+                <span id="profileUsername" class="profile-username"></span>
+                <div class="profile-icon">👤</div>
+                <div class="profile-menu hidden" id="profileMenu"><button id="logoutBtn"
+                        class="profile-logout">Logout</button></div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="quiz-header">
+        <h1>🧠 Eco Quiz</h1>
+        <button class="back-btn" onclick="history.back()">← Back</button>
+    </div>
+
+    <div class="quiz-container">
+        <div class="settings">
+            <label>Questions: <input id="numQ" type="number" min="3" max="20" value="8"></label>
+            <label>Duration (sec): <input id="duration" type="number" min="30" max="600" value="120"></label>
+            <button id="startQuiz">🚀 Start Quiz</button>
+            <div class="small" style="margin-left: auto;">⏱ Time left: <span id="timeLeft"
+                    class="time-display">0</span>s</div>
+        </div>
+
+        <div class="top-stats">
+            <div class="stat-item">📊 Score <span class="stat-value" id="quizScore">0</span></div>
+            <div class="stat-item">❓ Question <span class="stat-value"><span id="qIndex">0</span>/<span
+                        id="qTotal">0</span></span></div>
+            <div class="stat-item">🏆 High Score <span class="stat-value" id="quizHigh">0</span></div>
+        </div>
+
+        <div id="quizArea"></div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+    <script>
+        (function () {
+            const apiBase = (window.API && window.API.base) || '/api';
+            const startBtn = document.getElementById('startQuiz');
+            const numQ = document.getElementById('numQ');
+            const durationInput = document.getElementById('duration');
+            const quizArea = document.getElementById('quizArea');
+            const timeLeftEl = document.getElementById('timeLeft');
+            const scoreEl = document.getElementById('quizScore');
+            const qIndexEl = document.getElementById('qIndex');
+            const qTotalEl = document.getElementById('qTotal');
+            const quizHighEl = document.getElementById('quizHigh');
+
+            let questions = [];
+            let current = 0;
+            let score = 0;
+            let timer = null;
+            let timeLeft = 0;
+
+            async function apiFetch(path, opts = {}) {
+                return fetch(apiBase + path, Object.assign({ credentials: 'include', headers: { 'Content-Type': 'application/json' } }, opts));
+            }
+
+            function shuffle(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[arr[i], arr[j]] = [arr[j], arr[i]] } return arr }
+
+            function renderQuestion() {
+                if (current >= questions.length) return endQuiz();
+                const q = questions[current];
+                qIndexEl.textContent = current + 1;
+                qTotalEl.textContent = questions.length;
+                const opts = q.options.map((o, idx) => ({ text: o, idx }));
+                shuffle(opts);
+                quizArea.innerHTML = '';
+                const card = document.createElement('div'); card.className = 'question-card';
+                const qEl = document.createElement('div'); qEl.innerHTML = '<strong>' + q.question + '</strong>';
+                const optsDiv = document.createElement('div'); optsDiv.className = 'options';
+                opts.forEach(o => {
+                    const b = document.createElement('button'); b.className = 'option-btn'; b.textContent = o.text;
+                    b.addEventListener('click', () => {
+                        const correctText = q.options[q.answerIndex];
+                        if (o.text === correctText) {
+                            b.classList.add('correct'); score += 1; scoreEl.textContent = score * 100;
+                        } else {
+                            b.classList.add('wrong');
+                        }
+                        Array.from(optsDiv.children).forEach(btn => btn.disabled = true);
+                        Array.from(optsDiv.children).forEach(btn => {
+                            if (btn.textContent === correctText) btn.classList.add('correct');
+                        });
+                        setTimeout(() => { current++; renderQuestion(); }, 900);
+                    });
+                    optsDiv.appendChild(b);
+                });
+                card.appendChild(qEl); card.appendChild(optsDiv);
+                quizArea.appendChild(card);
+            }
+
+            function endQuiz() {
+                clearInterval(timer);
+                quizArea.innerHTML = '<div class="question-card"><h3 style="color:#2E7D32; font-size:22px;">🎊 Quiz Complete!</h3><p style="color:#6B7280; margin-top:12px;">Your score: <span style="color:#2E7D32; font-family:Outfit; font-size:32px; font-weight:700;">' + (score * 100) + '</span></p></div>';
+                fetch('/api/score', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ game: 'quiz', score: score * 100 }) })
+                    .then(r => r.json().catch(() => ({})))
+                    .then(b => {
+                        if (b && b.awarded) {
+                            const msg = document.createElement('div'); msg.className = 'small'; msg.style.marginTop = '14px'; msg.textContent = '✨ Awarded: ' + b.awarded + ' 🍃 • Coins: ' + (b.coins || 0);
+                            quizArea.firstChild.appendChild(msg);
+                            const coinsEl = document.getElementById('profileCoins'); if (coinsEl) coinsEl.textContent = '🍃 ' + (b.coins || 0);
+                        }
+                    }).catch(() => { });
+            }
+
+            async function fetchQuestions(count) {
+                try {
+                    const r = await apiFetch('/quiz/generate', { method: 'POST', body: JSON.stringify({ count }) });
+                    const j = await r.json();
+                    if (r.ok && j.questions && j.questions.length > 0) return j.questions;
+                } catch (e) { }
+                return [
+                    { id: 'f1', question: 'Which bin for a glass bottle?', options: ['Recycle', 'Organic', 'Landfill', 'Hazardous'], answerIndex: 0 },
+                    { id: 'f2', question: 'Composting is best for?', options: ['Plastic', 'Food scraps', 'Glass', 'Metal'], answerIndex: 1 }
+                ];
+            }
+
+            startBtn.addEventListener('click', async () => {
+                startBtn.disabled = true;
+                const count = parseInt(numQ.value, 10) || 8;
+                questions = await fetchQuestions(count);
+                questions = questions.slice(0, count);
+                questions.forEach(q => { if (!Array.isArray(q.options)) q.options = q.options || []; while (q.options.length < 4) q.options.push('N/A'); if (typeof q.answerIndex !== 'number') q.answerIndex = 0 });
+                current = 0; score = 0; scoreEl.textContent = 0; qIndexEl.textContent = 0; qTotalEl.textContent = questions.length;
+                timeLeft = Math.max(30, Math.min(600, parseInt(durationInput.value, 10) || 120));
+                timeLeftEl.textContent = timeLeft;
+                timer = setInterval(() => {
+                    timeLeft--; timeLeftEl.textContent = timeLeft; if (timeLeft <= 0) { endQuiz(); clearInterval(timer); }
+                }, 1000);
+                renderQuestion();
+            });
+
+            (async function () { try { const r = await fetch('/api/user-stats', { credentials: 'include' }); const b = await r.json().catch(() => ({})); if (r.ok && b.highscores) quizHighEl.textContent = b.highscores.quiz || 0; } catch (e) { } })();
+        })();
+    </script>
+</body>
+
+</html>

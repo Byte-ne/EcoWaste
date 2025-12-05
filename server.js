@@ -148,6 +148,79 @@ app.post('/api/purchase-tag', (req, res) => {
     res.json({ success: true, coins: u.coins, ownedTags: u.ownedTags });
 });
 
+// Generate a quiz using Groq: returns an array of questions with 4 options each
+app.post('/api/quiz/generate', async (req, res) => {
+    try {
+        const { count } = req.body || {};
+        const n = Math.max(3, Math.min(20, parseInt(count || 5, 10)));
+        const groqApiKey = process.env.GROQ_API_KEY;
+        if (!groqApiKey) return res.status(500).json({ error: 'Groq API key not configured' });
+
+        const prompt = `Generate ${n} multiple-choice questions about recycling, waste sorting, and eco-friendly habits. ` +
+            `For each question provide a JSON object with keys: id (short unique), question (string), options (array of 4 strings), answerIndex (0-3). ` +
+            `Ensure questions vary in difficulty and cover different topics; do not repeat questions or answers. Output a JSON array.`;
+
+        const modelToUse = process.env.GROQ_MODEL || 'groq/compound';
+
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${groqApiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model: modelToUse, messages: [{ role: 'user', content: prompt }], temperature: 0.8, max_tokens: 1200 })
+        });
+
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            console.error('Groq quiz error:', errData);
+            if (errData && errData.error && errData.error.code === 'model_decommissioned') {
+                return res.status(422).json({ error: 'model_decommissioned', message: errData.error.message, triedModel: modelToUse });
+            }
+            return res.status(response.status).json({ error: 'Groq API error', details: errData });
+        }
+
+        const data = await response.json();
+        const text = data.choices?.[0]?.message?.content || '';
+
+        // Extract JSON array
+        let jsonMatch = text.match(/\[\s*\{[\s\S]*\}\s*\]/);
+        if (!jsonMatch && text.includes('[')) {
+            const start = text.indexOf('[');
+            const end = text.lastIndexOf(']') + 1;
+            if (start !== -1 && end > start) jsonMatch = [text.substring(start, end)];
+        }
+
+        let questions = [];
+        try {
+            if (jsonMatch) {
+                questions = JSON.parse(jsonMatch[0]);
+            } else {
+                questions = [];
+            }
+        } catch (err) {
+            console.error('Quiz parse error:', err, 'raw:', text);
+            return res.status(500).json({ error: 'Failed to parse quiz from model', raw: text });
+        }
+
+        // Basic validation: ensure options length 4 and answerIndex present
+        questions = questions.map((q, idx) => {
+            if (!q.id) q.id = 'q' + idx + '_' + Math.random().toString(36).slice(2, 6);
+            if (!Array.isArray(q.options)) q.options = (q.incorrect || []).slice(0, 3).concat([q.correct || '']).slice(0, 4);
+            if (typeof q.answerIndex !== 'number') {
+                // try to find correct in options
+                const ci = q.options.findIndex(o => (q.correct && o && q.correct && o.trim() === q.correct.trim()));
+                q.answerIndex = ci >= 0 ? ci : 0;
+            }
+            // ensure 4 options
+            while (q.options.length < 4) q.options.push('None of the above');
+            return q;
+        });
+
+        res.json({ success: true, questions });
+    } catch (err) {
+        console.error('Quiz generation error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // DIY Suggestion endpoint (Groq API)
 app.post('/api/diy-suggestions', async (req, res) => {
     try {

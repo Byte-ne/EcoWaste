@@ -8,177 +8,239 @@
     <link rel="stylesheet" href="style.css">
 
     <style>
-        /* page-specific tweaks kept local */
         body {
-            background: white;
-            color: #1c8c3a;
+            background: var(--bg-light);
         }
 
         .section {
             width: 100%;
             display: flex;
             flex-wrap: wrap;
-            padding: 40px 20px;
+            padding: 60px 32px;
             align-items: center;
             justify-content: center;
-            gap: 30px;
+            gap: 40px;
+            max-width: 1100px;
+            margin: 0 auto;
         }
 
         .green {
-            background: #e6ffe6;
+            background: linear-gradient(135deg, #f0fef0 0%, #e8fde8 100%);
         }
 
         .white {
-            background: #ffffff;
+            background: linear-gradient(135deg, #fff 0%, #f8fafb 100%);
         }
 
         iframe {
             width: 100%;
-            max-width: 500px;
-            height: 280px;
-            border: 3px solid #1c8c3a;
-            border-radius: 8px;
+            max-width: 520px;
+            height: 300px;
+            border: 3px solid #2E7D32;
+            border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(46, 125, 50, 0.15);
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        iframe:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(46, 125, 50, 0.25);
         }
 
         .text-box {
             max-width: 500px;
-            line-height: 1.6;
-            font-size: 18px;
+            line-height: 1.8;
+            font-size: 16px;
+            color: #6B7280;
+        }
+
+        .text-box h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2E7D32;
+            margin-bottom: 12px;
         }
 
         @media (max-width: 600px) {
             iframe {
-                height: 220px;
+                height: 240px;
+            }
+
+            .section {
+                padding: 40px 16px;
             }
         }
 
         /* DIY Suggestion Section Styles */
         .diy-section {
-            max-width: 800px;
+            max-width: 900px;
             margin: 40px auto;
-            padding: 30px;
-            background: #f9f9f9;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            background: linear-gradient(135deg, #fff 0%, #f8fafb 100%);
+            border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            border: 2px solid #e8eaed;
+            transition: all 300ms ease;
+        }
+
+        .diy-section:hover {
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
         }
 
         .diy-section h2 {
             text-align: center;
-            color: #1c8c3a;
+            color: #2E7D32;
+            margin-bottom: 12px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .diy-section>p {
+            text-align: center;
+            color: #6B7280;
             margin-bottom: 20px;
+            font-size: 14px;
         }
 
         .diy-input-group {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 20px;
         }
 
         .diy-input-group input {
             flex: 1;
-            padding: 12px;
-            border: 2px solid #1c8c3a;
-            border-radius: 6px;
+            padding: 12px 14px;
+            border: 1.5px solid #e8eaed;
+            border-radius: 10px;
             font-size: 15px;
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f8fafb 0%, #fff 100%);
+            transition: all 300ms ease;
         }
 
         .diy-input-group input:focus {
             outline: none;
             border-color: #2E7D32;
-            box-shadow: 0 0 5px rgba(46, 125, 50, 0.3);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
         }
 
         .diy-input-group button {
-            padding: 12px 24px;
-            background-color: #2E7D32;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #2E7D32 0%, #1e5f28 100%);
             color: white;
             border: none;
-            border-radius: 6px;
-            font-weight: bold;
+            border-radius: 10px;
+            font-weight: 600;
             cursor: pointer;
             font-size: 15px;
-            transition: background-color 200ms ease;
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+            font-family: 'Poppins', sans-serif;
         }
 
         .diy-input-group button:hover {
-            background-color: #1B5E20;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(46, 125, 50, 0.4);
         }
 
-        .diy-input-group button:disabled {
-            background-color: #999;
-            cursor: not-allowed;
+        .diy-input-group button:active {
+            transform: translateY(0);
         }
 
         .diy-loading {
             text-align: center;
             color: #2E7D32;
-            font-weight: bold;
+            font-weight: 600;
             display: none;
             margin: 20px 0;
+            animation: pulse 1s infinite;
         }
 
         .diy-suggestions {
             display: grid;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 16px;
+            margin-top: 24px;
         }
 
         .diy-suggestion-card {
-            background: white;
-            padding: 18px;
+            background: linear-gradient(135deg, #f0fef0 0%, #e8fde8 100%);
+            padding: 24px;
             border-left: 5px solid #2E7D32;
-            border-radius: 8px;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.08);
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #d4f1d4;
+        }
+
+        .diy-suggestion-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(46, 125, 50, 0.15);
+            border-color: #2E7D32;
         }
 
         .diy-suggestion-card h3 {
-            margin: 0 0 8px 0;
-            color: #1c8c3a;
+            margin: 0 0 10px 0;
+            color: #2E7D32;
             font-size: 18px;
+            font-weight: 700;
         }
 
         .diy-suggestion-card p {
             margin: 8px 0;
-            color: #555;
+            color: #6B7280;
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         .diy-scores {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-            margin-top: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
         }
 
         .diy-score {
-            background: #f0f8f0;
-            padding: 10px;
-            border-radius: 6px;
+            background: linear-gradient(135deg, #e8ffe8 0%, #d0ffd0 100%);
+            padding: 14px;
+            border-radius: 10px;
             text-align: center;
             font-size: 13px;
+            border: 1px solid #d4f1d4;
+            transition: all 300ms ease;
+        }
+
+        .diy-score:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.1);
         }
 
         .diy-score-label {
-            color: #666;
-            font-weight: bold;
+            color: #6B7280;
+            font-weight: 600;
             font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
         .diy-score-value {
             color: #2E7D32;
-            font-weight: bold;
-            font-size: 16px;
-            margin-top: 4px;
+            font-weight: 700;
+            font-size: 18px;
+            margin-top: 6px;
+            font-family: 'Outfit', sans-serif;
         }
 
         .diy-error {
             color: #d32f2f;
-            padding: 15px;
-            background: #ffebee;
-            border-radius: 6px;
-            margin-top: 15px;
+            padding: 16px;
+            background: linear-gradient(135deg, #ffecec 0%, #ffd6d6 100%);
+            border: 1.5px solid #ff4d4d;
+            border-radius: 10px;
+            margin-top: 16px;
+            font-weight: 500;
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
     </style>
 </head>
@@ -198,10 +260,10 @@
                 <a href="#">Games</a>
                 <div class="dropdown-menu">
                     <a href="sorting-game.html">Sorting Game</a>
-                    <a href="index.html#games">Quiz Game</a>
+                    <a href="quiz-game.html">Quiz Game</a>
                 </div>
             </div>
-            <a href="index.html#contact">Contact</a>
+            <a href="shop.html">Shop</a>
         </div>
 
         <div class="login-btn" id="userSection">
@@ -211,6 +273,7 @@
 
         <div class="profile-section hidden" id="profileSection">
             <div class="profile-container">
+                <span id="profileCoins" class="profile-coins">🍃 0</span>
                 <span id="profileUsername" class="profile-username"></span>
                 <div class="profile-icon">👤</div>
                 <div class="profile-menu hidden" id="profileMenu">

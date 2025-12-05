@@ -134,6 +134,17 @@
         // User is logged in
         showProfileSection(user.username);
 
+        // fetch user stats (coins, tags, highscores)
+        try {
+            const statsRes = await apiFetch('/user-stats');
+            if (statsRes.ok && statsRes.body) {
+                const coinsEl = document.getElementById('profileCoins');
+                if (coinsEl) coinsEl.textContent = '🍃 ' + (statsRes.body.coins || 0);
+            }
+        } catch (e) {
+            console.warn('Failed to load user stats', e);
+        }
+
         // Profile dropdown logic
         const profileIcon = document.querySelector('.profile-icon');
         const profileMenu = document.getElementById('profileMenu');

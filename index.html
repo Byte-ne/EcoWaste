@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoWaste Info</title>
+    <title>EcoWaste</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -13,7 +13,8 @@
     <!-- Navigation Bar -->
     <nav>
         <div class="nav-left">
-            <h1>EcoWaste Info</h1>
+            <img src="logo.png" alt="EcoWaste logo" class="site-logo">
+            <h1>EcoWaste</h1>
         </div>
 
         <div class="nav-links">
@@ -23,19 +24,19 @@
                 <a href="#">Games</a>
                 <div class="dropdown-menu">
                     <a href="sorting-game.html">Sorting Game</a>
-                    <a href="#games">Quiz Game</a>
+                    <a href="quiz-game.html">Quiz Game</a>
                 </div>
             </div>
-            <a href="#contact">Contact</a>
+            <a href="shop.html">Shop</a>
         </div>
 
         <div class="login-btn" id="userSection">
-            <button id="authBtn"
-                style="background-color: #1B5E20; padding: 10px 18px; border-radius: 5px; color: white; border: none; font-weight: bold; cursor: pointer; font-size: 16px;">Login</button>
+            <button id="authBtn">Login</button>
         </div>
 
         <div class="profile-section hidden" id="profileSection">
             <div class="profile-container">
+                <span id="profileCoins" class="profile-coins">🍃 0</span>
                 <span id="profileUsername" class="profile-username"></span>
                 <div class="profile-icon">👤</div>
                 <div class="profile-menu hidden" id="profileMenu">
@@ -45,75 +46,226 @@
         </div>
     </nav>
 
-    <!-- Auth Modal -->
-    <div id="authModal" class="auth-modal">
-        <div class="auth-modal-content">
-            <div class="auth-tabs">
-                <button class="auth-tab active" data-tab="login">Login</button>
-                <button class="auth-tab" data-tab="signup">Sign Up</button>
-            </div>
-
-            <div id="authLoginTab" class="auth-tab-content active">
-                <h3>Log In</h3>
-                <form id="indexLoginForm">
-                    <input type="text" id="index-login-username" placeholder="Username" required>
-                    <input type="password" id="index-login-password" placeholder="Password" required>
-                    <button type="submit" class="auth-submit-btn">Log In</button>
-                    <div id="index-login-msg" class="auth-msg"></div>
-                </form>
-            </div>
-
-            <div id="authSignupTab" class="auth-tab-content">
-                <h3>Sign Up</h3>
-                <form id="indexSignupForm">
-                    <input type="text" id="index-signup-username" placeholder="Username" required>
-                    <input type="password" id="index-signup-password" placeholder="Password" required>
-                    <input type="password" id="index-signup-password2" placeholder="Confirm Password" required>
-                    <button type="submit" class="auth-submit-btn">Sign Up</button>
-                    <div id="index-signup-msg" class="auth-msg"></div>
-                </form>
-            </div>
-
-            <button id="closeAuthModal" class="auth-close-btn">×</button>
-        </div>
-    </div>
-
-    <!-- Main Info Section -->
-    <div id="home" class="info-section">
+    <!-- Main Content: Only the paragraph and two pie charts as requested -->
+    <main class="info-section">
         <h2>Why Recycling Is Important</h2>
         <p>
-            Recycling helps conserve natural resources, reduce pollution,
-            save energy, and protect ecosystems. By reusing materials instead
-            of creating new ones, we reduce waste going to landfills and
-            contribute to a cleaner, healthier planet.
+            Recycling helps conserve natural resources, reduces pollution, saves energy, and minimizes landfill waste.
+            By recycling materials like paper, plastic, glass, and metal, we can reduce the need for raw material
+            extraction, which often leads to habitat destruction and environmental degradation. Additionally, recycling
+            reduces greenhouse gas emissions associated with manufacturing processes, contributing to the fight against
+            climate change.
         </p>
-    </div>
+        <br><br>
 
-    <!-- Recycling Tips Section -->
-    <div id="tips" class="info-section">
-        <h2>Recycling Tips</h2>
-        <ul>
-            <li>Rinse food containers before recycling.</li>
-            <li>Flatten cardboard boxes to save space.</li>
-            <li>Check local rules — some items require special handling.</li>
-            <li>Separate recyclables by type when required.</li>
-        </ul>
-    </div>
+        <div class="charts-section">
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Segregation Practice</h3>
+                    <canvas id="pie1" width="360" height="360" aria-label="Segregation practice pie chart"></canvas>
+                    <div class="chart-legend" id="legend1"></div>
+                </div>
 
-    <!-- Games Placeholder Section -->
-    <div id="games" class="info-section">
-        <h2>Games</h2>
-        <p>This section is a placeholder for games. Your teammate is building the sorting game — it will appear here
-            soon.</p>
-        <button onclick="alert('Games coming soon!')" class="auth-submit-btn">Open Games (placeholder)</button>
-    </div>
+                <div class="chart-card">
+                    <h3>Familiarity with Segregation</h3>
+                    <canvas id="pie2" width="360" height="360"
+                        aria-label="Familiarity with segregation pie chart"></canvas>
+                    <div class="chart-legend" id="legend2"></div>
+                </div>
+            </div>
+            <br><br>
+            <p class="charts-explain">
+                The charts show that most people do not segregate waste, even though a majority are familiar with how
+                segregation works. This highlights a gap between awareness and action. While knowledge exists,
+                consistent practice is lacking, stressing the need for better habits, motivation, and community-level
+                initiatives to improve waste management.
+            </p>
+        </div>
+    </main>
 
-    <!-- Contact Placeholder Section -->
-    <div id="contact" class="info-section">
-        <h2>Contact</h2>
-        <p>For inquiries, email: <a href="mailto:info@ecowaste.example">info@ecowaste.example</a></p>
-        <p>Or reach out during the hackathon demo.</p>
-    </div>
+    <script>
+        // Small helper: draw animated interactive pie charts
+        (function () {
+            function createPie(canvas, data, legendEl) {
+                const ctx = canvas.getContext('2d');
+                const DPR = window.devicePixelRatio || 1;
+                const size = Math.min(canvas.width, canvas.height);
+                canvas.width = size * DPR;
+                canvas.height = size * DPR;
+                canvas.style.width = size + 'px';
+                canvas.style.height = size + 'px';
+                ctx.scale(DPR, DPR);
+
+                const center = { x: size / 2, y: size / 2 };
+                const radius = Math.min(size / 2, size / 2) - 24;
+                const total = data.reduce((s, d) => s + d.value, 0) || 100;
+                const angles = data.map(d => (d.value / total) * Math.PI * 2);
+                let progress = 0; // 0..1
+                const duration = 900; // ms
+                let start = null;
+                let exploded = -1;
+                let hoverIndex = -1;
+
+                // build legend
+                if (legendEl) {
+                    legendEl.innerHTML = '';
+                    data.forEach(d => {
+                        const item = document.createElement('div');
+                        item.className = 'item';
+                        item.innerHTML = `<span class="swatch" style="background:${d.color}"></span><span>${d.label} — ${d.value}%</span>`;
+                        legendEl.appendChild(item);
+                    });
+                }
+
+                const tooltip = document.createElement('div');
+                tooltip.className = 'chart-tooltip';
+                tooltip.style.display = 'none';
+                document.body.appendChild(tooltip);
+
+                function drawFrame(p) {
+                    ctx.clearRect(0, 0, size, size);
+                    let a = -Math.PI / 2;
+                    for (let i = 0; i < data.length; i++) {
+                        const ang = angles[i] * Math.min(1, p);
+                        const mid = a + ang / 2;
+                        // explosion offset
+                        let ox = 0, oy = 0;
+                        const isExploded = (i === exploded);
+                        if (isExploded) {
+                            ox = Math.cos(mid) * 12;
+                            oy = Math.sin(mid) * 12;
+                        }
+
+                        ctx.beginPath();
+                        ctx.moveTo(center.x + ox, center.y + oy);
+                        ctx.arc(center.x + ox, center.y + oy, radius, a, a + ang);
+                        ctx.closePath();
+                        ctx.fillStyle = data[i].color;
+                        ctx.globalAlpha = (i === hoverIndex) ? 0.95 : 1;
+                        ctx.fill();
+
+                        // inner cut for donut look
+                        ctx.beginPath();
+                        ctx.moveTo(center.x + ox, center.y + oy);
+                        ctx.fillStyle = 'rgba(255,255,255,0.0)';
+                        ctx.globalCompositeOperation = 'destination-out';
+                        ctx.arc(center.x + ox, center.y + oy, radius * 0.52, a, a + ang);
+                        ctx.fill();
+                        ctx.globalCompositeOperation = 'source-over';
+
+                        a += ang;
+                    }
+
+                    // center label
+                    ctx.fillStyle = '#2f2f2f';
+                    ctx.font = '600 16px Poppins, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('Tap slices', center.x, center.y);
+                }
+
+                function step(ts) {
+                    if (!start) start = ts;
+                    const elapsed = ts - start;
+                    progress = Math.min(1, elapsed / duration);
+                    drawFrame(progress);
+                    if (progress < 1) requestAnimationFrame(step);
+                }
+
+                requestAnimationFrame(step);
+
+                function getMouseAngle(mx, my) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = mx - rect.left - center.x;
+                    const y = my - rect.top - center.y;
+                    const ang = Math.atan2(y, x);
+                    return ang;
+                }
+
+                function getIndexAtPosition(mx, my) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = mx - rect.left - center.x;
+                    const y = my - rect.top - center.y;
+                    const dist = Math.sqrt(x * x + y * y);
+                    if (dist < radius * 0.52 || dist > radius + 6) return -1;
+                    let ang = Math.atan2(y, x);
+                    // start at -PI/2
+                    let startA = -Math.PI / 2;
+                    for (let i = 0; i < angles.length; i++) {
+                        const a2 = startA + angles[i];
+                        if (ang >= startA && ang <= a2) return i;
+                        startA = a2;
+                    }
+                    // wrap-around check
+                    // if angle lower than start, check last slice
+                    return -1;
+                }
+
+                canvas.addEventListener('mousemove', (ev) => {
+                    const idx = getIndexAtPosition(ev.clientX, ev.clientY);
+                    hoverIndex = idx;
+                    if (idx >= 0) {
+                        tooltip.style.display = 'block';
+                        tooltip.textContent = `${data[idx].label}: ${data[idx].value}%`;
+                        tooltip.style.left = ev.clientX + 'px';
+                        tooltip.style.top = ev.clientY + 'px';
+                    } else {
+                        tooltip.style.display = 'none';
+                    }
+                    drawFrame(progress);
+                });
+
+                canvas.addEventListener('mouseleave', () => {
+                    hoverIndex = -1;
+                    document.body.removeChild(tooltip);
+                    // recreate to keep consistent when re-entering
+                    // (easier than repositioning)
+                    const nt = document.createElement('div');
+                    nt.className = 'chart-tooltip';
+                    nt.style.display = 'none';
+                    document.body.appendChild(nt);
+                    drawFrame(progress);
+                });
+
+                canvas.addEventListener('click', (ev) => {
+                    const idx = getIndexAtPosition(ev.clientX, ev.clientY);
+                    if (idx >= 0) {
+                        exploded = (exploded === idx) ? -1 : idx;
+                        drawFrame(1);
+                    }
+                });
+
+                // initial draw
+                drawFrame(0);
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const pie1 = document.getElementById('pie1');
+                const pie2 = document.getElementById('pie2');
+                const legend1 = document.getElementById('legend1');
+                const legend2 = document.getElementById('legend2');
+
+                if (pie1 && pie2) {
+                    // pick colors from CSS variables so charts match the page theme
+                    const css = getComputedStyle(document.documentElement);
+                    const primary = (css.getPropertyValue('--primary') || '#2E7D32').trim();
+                    const primaryLight = (css.getPropertyValue('--primary-light') || '#81C784').trim();
+                    const accentDark = (css.getPropertyValue('--accent-dark') || '#FFB300').trim();
+                    const danger = (css.getPropertyValue('--danger') || '#D32F2F').trim();
+
+                    createPie(pie1, [
+                        { label: 'Segregate', value: 35, color: primary },
+                        { label: "Don't Segregate", value: 65, color: danger }
+                    ], legend1);
+
+                    createPie(pie2, [
+                        { label: 'Familiar', value: 64, color: primaryLight },
+                        { label: 'Not Familiar', value: 36, color: accentDark }
+                    ], legend2);
+                }
+            });
+        })();
+    </script>
 
     <script src="data.js"></script>
     <script src="script.js"></script>
