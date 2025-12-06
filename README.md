@@ -14,7 +14,7 @@ This link is the link obtained by hosting the full GitHub repository on **Render
 The full backend is not required to manually install and run in PowerShell. Instead, it is auto-hosted on Render and the 
 Backend and Database are always active.
 
-##Quick Start (Windows PowerShell)
+## Quick Start (Windows PowerShell)
 
 ### 1. Install Dependencies
 
