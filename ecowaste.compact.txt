@@ -1,0 +1,28 @@
+CONFIG { PORT=3000, API="/api", USERS="users.json", TAGS=[...] }
+
+main():
+  if node: start_server()
+  else: init_client_ui()
+
+start_server():
+  app = Express()
+  app.use(json, sessions, static)
+  app.GET(API+"/ping") -> {ok:true}
+  app.POST(API+"/signup") -> create_user()
+  app.POST(API+"/login")  -> auth_user()
+  app.POST(API+"/logout") -> destroy_session()
+  app.GET(API+"/tags")    -> return TAGS
+  app.POST(API+"/buy")    -> buy_tag(user, tagId)
+  app.POST(API+"/score")  -> update_highscore_and_award_coins()
+  app.POST(API+"/quiz")   -> call_AI_and_return_questions()  // requires API key
+  app.listen(PORT)
+
+init_client_ui():
+  STATE = { user:null, coins:0, owned:[], highs:{} }
+  on(load): fetch("/api/tags"), renderUI()
+  on(signup/login): POST /api/signup or /api/login -> set STATE, update UI
+  on(buy): POST /api/buy -> update STATE.coins and owned
+  on(gameEnd): POST /api/score -> show reward if new high
+  on(genQuiz): POST /api/quiz -> render quiz
+
+// tiny helpers: read/write users.json, validate inputs, hash passwords, session check

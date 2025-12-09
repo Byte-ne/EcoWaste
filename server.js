@@ -4,21 +4,29 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const cors = require('cors');
+const mongoose = require('mongoose');
+require('dotenv').config({ path: 'hack.env' });
 
-const USERS_FILE = path.join(__dirname, 'users.json');
 const PORT = process.env.PORT || 3000;
 
-function loadUsers() {
-    try {
-        if (!fs.existsSync(USERS_FILE)) return {};
-        return JSON.parse(fs.readFileSync(USERS_FILE, 'utf8') || '{}');
-    } catch (e) {
-        return {};
-    }
-}
-function saveUsers(obj) {
-    fs.writeFileSync(USERS_FILE, JSON.stringify(obj, null, 2), 'utf8');
-}
+// Define User schema
+const userSchema = new mongoose.Schema({
+    username: { type: String, required: true, unique: true },
+    passwordHash: { type: String, required: true },
+    created: { type: Number, default: Date.now },
+    highscores: {
+        sorting: { type: Number, default: 0 },
+        quiz: { type: Number, default: 0 }
+    },
+    coins: { type: Number, default: 0 },
+    ownedTags: { type: [String], default: [] }
+});
+const User = mongoose.model('User', userSchema);
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/hackathon')
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('MongoDB connection error:', err));
 
 const app = express();
 app.use(cors({ origin: true, credentials: true }));
@@ -36,25 +44,32 @@ app.get('/api/ping', (req, res) => res.json({ ok: true }));
 app.post('/api/signup', async (req, res) => {
     const { username, password } = req.body || {};
     if (!username || !password) return res.status(400).json({ success: false, message: 'Missing username or password' });
-    const users = loadUsers();
-    if (users[username]) return res.status(409).json({ success: false, message: 'Username exists' });
-    const hash = await bcrypt.hash(password, 10);
-    users[username] = { username, passwordHash: hash, created: Date.now() };
-    saveUsers(users);
-    req.session.user = { username };
-    res.json({ success: true, user: { username } });
+    try {
+        const existingUser = await User.findOne({ username });
+        if (existingUser) return res.status(409).json({ success: false, message: 'Username exists' });
+        const hash = await bcrypt.hash(password, 10);
+        const newUser = new User({ username, passwordHash: hash });
+        await newUser.save();
+        req.session.user = { username };
+        res.json({ success: true, user: { username } });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
 });
 
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body || {};
     if (!username || !password) return res.status(400).json({ success: false, message: 'Missing username or password' });
-    const users = loadUsers();
-    const u = users[username];
-    if (!u) return res.status(401).json({ success: false, message: 'No such user' });
-    const ok = await bcrypt.compare(password, u.passwordHash);
-    if (!ok) return res.status(401).json({ success: false, message: 'Invalid password' });
-    req.session.user = { username };
-    res.json({ success: true, user: { username } });
+    try {
+        const user = await User.findOne({ username });
+        if (!user) return res.status(401).json({ success: false, message: 'No such user' });
+        const ok = await bcrypt.compare(password, user.passwordHash);
+        if (!ok) return res.status(401).json({ success: false, message: 'Invalid password' });
+        req.session.user = { username };
+        res.json({ success: true, user: { username } });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
 });
 
 app.post('/api/logout', (req, res) => {
@@ -69,36 +84,40 @@ app.get('/api/me', (req, res) => {
 });
 
 // Return user stats (coins, owned tags, highscores)
-app.get('/api/user-stats', (req, res) => {
+app.get('/api/user-stats', async (req, res) => {
     if (!req.session || !req.session.user) return res.status(401).json({ message: 'Not authorized' });
-    const users = loadUsers();
-    const u = users[req.session.user.username] || {};
-    // ensure defaults
-    const coins = typeof u.coins === 'number' ? u.coins : 0;
-    const ownedTags = Array.isArray(u.ownedTags) ? u.ownedTags : [];
-    const highscores = u.highscores || { sorting: 0, quiz: 0 };
-    res.json({ coins, ownedTags, highscores });
+    try {
+        const user = await User.findOne({ username: req.session.user.username });
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        const coins = user.coins || 0;
+        const ownedTags = user.ownedTags || [];
+        const highscores = user.highscores || { sorting: 0, quiz: 0 };
+        res.json({ coins, ownedTags, highscores });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
 });
 
 // Save score for a game and award coins for new highscore
-app.post('/api/score', (req, res) => {
+app.post('/api/score', async (req, res) => {
     if (!req.session || !req.session.user) return res.status(401).json({ message: 'Not authorized' });
     const { game, score } = req.body || {};
     if (!game || typeof score !== 'number') return res.status(400).json({ error: 'Missing game or score' });
-    const users = loadUsers();
-    const username = req.session.user.username;
-    const u = users[username] || (users[username] = { username, created: Date.now() });
-    if (!u.highscores) u.highscores = { sorting: 0, quiz: 0 };
-    const prev = u.highscores[game] || 0;
-    let awarded = 0;
-    if (score > prev) {
-        u.highscores[game] = score;
-        // award coins as floor(score / 10)
-        awarded = Math.floor(score / 10);
-        u.coins = (u.coins || 0) + awarded;
-        saveUsers(users);
+    try {
+        const user = await User.findOne({ username: req.session.user.username });
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        const prev = user.highscores[game] || 0;
+        let awarded = 0;
+        if (score > prev) {
+            user.highscores[game] = score;
+            awarded = Math.floor(score / 10);
+            user.coins += awarded;
+            await user.save();
+        }
+        res.json({ success: true, newHigh: score > prev, awarded, highscores: user.highscores, coins: user.coins });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
     }
-    res.json({ success: true, newHigh: score > prev, awarded, highscores: u.highscores, coins: u.coins || 0 });
 });
 
 // Purchase a tag
@@ -130,22 +149,24 @@ app.get('/api/tags', (req, res) => {
     res.json({ tags: TAGS });
 });
 
-app.post('/api/purchase-tag', (req, res) => {
+app.post('/api/purchase-tag', async (req, res) => {
     if (!req.session || !req.session.user) return res.status(401).json({ message: 'Not authorized' });
     const { id } = req.body || {};
     if (!id) return res.status(400).json({ error: 'Missing tag id' });
     const tag = TAGS.find(t => t.id === id);
     if (!tag) return res.status(404).json({ error: 'Tag not found' });
-    const users = loadUsers();
-    const u = users[req.session.user.username] || (users[req.session.user.username] = { username: req.session.user.username, created: Date.now() });
-    u.coins = u.coins || 0;
-    u.ownedTags = u.ownedTags || [];
-    if (u.ownedTags.includes(id)) return res.status(400).json({ error: 'Already owned' });
-    if (u.coins < tag.cost) return res.status(400).json({ error: 'Insufficient coins' });
-    u.coins -= tag.cost;
-    u.ownedTags.push(id);
-    saveUsers(users);
-    res.json({ success: true, coins: u.coins, ownedTags: u.ownedTags });
+    try {
+        const user = await User.findOne({ username: req.session.user.username });
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        if (user.ownedTags.includes(id)) return res.status(400).json({ error: 'Already owned' });
+        if (user.coins < tag.cost) return res.status(400).json({ error: 'Insufficient coins' });
+        user.coins -= tag.cost;
+        user.ownedTags.push(id);
+        await user.save();
+        res.json({ success: true, coins: user.coins, ownedTags: user.ownedTags });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
 });
 
 // Generate a quiz using Groq: returns an array of questions with 4 options each
