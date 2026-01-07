@@ -2,6 +2,8 @@
 
 A full-stack web application for learning about recycling, playing educational games, and earning rewards through an in-game coin system and shop. Uses MongoDB Atlas for cloud data storage.
 
+goto: ecowaste-0vkj.onrender.com
+
 ---
 
 ## ?? Quick Start (Windows PowerShell)
