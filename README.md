@@ -2,7 +2,7 @@
 
 A full-stack web application for learning about recycling, playing educational games, and earning rewards through an in-game coin system and shop. Uses MongoDB Atlas for cloud data storage.
 
-goto [EcoWastee](https://ecowaste-0vkj.onrender.com/)
+goto [EcoWaste](https://ecowaste-0vkj.onrender.com/) for accessing the site!
 
 ---
 
